@@ -1,0 +1,1 @@
+("8.8.0.10" ta6le ("209310abe79558097877d2a3d7267cce6d2951eb" . "16101874ce9ee615195809b24fd46e83723b4b51") (collects #"net" #"imap-sig.rkt") (collects #"net" #"imap.rkt") (collects #"racket" #"base.rkt") (collects #"racket" #"runtime-config.rkt") (collects #"racket" #"unit.rkt"))

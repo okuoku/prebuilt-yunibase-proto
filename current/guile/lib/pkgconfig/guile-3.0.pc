@@ -1,0 +1,30 @@
+prefix=/opt/yunibase/current/guile
+exec_prefix=/opt/yunibase/current/guile
+bindir=/opt/yunibase/current/guile/bin
+libdir=/opt/yunibase/current/guile/lib
+includedir=/opt/yunibase/current/guile/include
+datarootdir=/opt/yunibase/current/guile/share
+datadir=/opt/yunibase/current/guile/share
+pkgdatadir=/opt/yunibase/current/guile/share/guile
+pkgincludedir=/opt/yunibase/current/guile/include/guile
+
+sitedir=/opt/yunibase/current/guile/share/guile/site/3.0
+extensiondir=/opt/yunibase/current/guile/lib/guile/3.0/extensions
+siteccachedir=/opt/yunibase/current/guile/lib/guile/3.0/site-ccache
+libguileinterface=0:0:0
+
+# Actual name of the 'guile' and 'guild' programs.  This is
+# particularly useful when '--program-transform-name' or similar has
+# been used.
+guild=${bindir}/guild
+guile=${bindir}/guile
+
+Name: GNU Guile
+Description: GNU's Ubiquitous Intelligent Language for Extension
+Version: UNKNOWN
+Libs: -L${libdir} -lguile-3.0 -lgc
+Libs.private:  -lgmp -lltdl -lffi	\
+  -lunistring -lcrypt  -lm   		\
+     		\
+  
+Cflags: -I${pkgincludedir}/3.0 -pthread 

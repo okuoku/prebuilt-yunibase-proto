@@ -1,0 +1,1 @@
+("8.8.0.10" ta6le ("08c1f3747f3c893ebeb256e3afd3f57506fc8ef2" . "02851547a5aeb6a29419ca8c528975d6c1b7095f") (collects #"racket" #"private" #"gen-temp.rkt") (collects #"racket" #"private" #"qq-and-or.rkt") (collects #"racket" #"private" #"stx.rkt"))

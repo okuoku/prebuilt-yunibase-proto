@@ -1,0 +1,1 @@
+("8.8.0.10" ta6le ("9bf6784a8350828be52da1aa428ac6470a02074b" . "7c39e9984b8d83b9ce96d9044494b6fd13d42b22") (collects #"file" #"gunzip.rkt") (collects #"racket" #"base.rkt") (collects #"racket" #"runtime-config.rkt"))

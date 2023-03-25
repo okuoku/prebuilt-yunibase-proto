@@ -1,0 +1,1 @@
+("8.8.0.10" ta6le ("471396aacfbd906bce65c699caa19d7e53022993" . "d61ee8b0cfe59db1f9016fefeca92f5426839e51") (collects #"ffi" #"unsafe" #"alloc.rkt") (collects #"ffi" #"unsafe" #"define.rkt") (collects #"ffi" #"unsafe.rkt") (collects #"openssl" #"libcrypto.rkt") (collects #"openssl" #"libssl.rkt") (collects #"racket" #"base.rkt") (collects #"racket" #"runtime-config.rkt"))

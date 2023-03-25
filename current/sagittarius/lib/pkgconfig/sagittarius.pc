@@ -1,0 +1,10 @@
+prefix=/opt/yunibase/current/sagittarius
+exec_prefix=${prefix}/bin
+libdir=/opt/yunibase/current/sagittarius/lib/sagittarius/0.9.10/x86_64-pc-linux
+includedir=${prefix}/lib/sagittarius/0.9.10/include
+
+Name: Sagittarius Scheme
+Description: Sagittarius Scheme C extension library
+Version: 0.9.10
+Libs: -L${libdir} -lsagittarius
+Cflags: -I${includedir}

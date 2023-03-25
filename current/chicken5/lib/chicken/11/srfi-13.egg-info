@@ -1,0 +1,15 @@
+((installed-files
+   "/opt/yunibase/current/chicken5/lib/chicken/11/srfi-13.o"
+   "/opt/yunibase/current/chicken5/lib/chicken/11/srfi-13.link"
+   "/opt/yunibase/current/chicken5/lib/chicken/11/srfi-13.so"
+   "/opt/yunibase/current/chicken5/lib/chicken/11/srfi-13.types"
+   "/opt/yunibase/current/chicken5/lib/chicken/11/srfi-13.import.so")
+ (synopsis "SRFI-13 string library")
+ (author "Olin Shivers")
+ (maintainer "The CHICKEN Team")
+ (category data)
+ (license "BSD")
+ (dependencies srfi-14)
+ (test-dependencies test)
+ (components
+   (extension srfi-13 (csc-options "-O3" "-d0") (types-file (predefined)))))

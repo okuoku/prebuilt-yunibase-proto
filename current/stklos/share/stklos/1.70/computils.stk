@@ -1,0 +1,128 @@
+;;;;
+;;;; utils.stk  -- Compiler Utilities
+;;;;
+;;;; Copyright © 2000-2023 Erick Gallesio <eg@stklos.net>
+;;;;
+;;;;
+;;;; This program is free software; you can redistribute it and/or modify
+;;;; it under the terms of the GNU General Public License as published by
+;;;; the Free Software Foundation; either version 2 of the License, or
+;;;; (at your option) any later version.
+;;;;
+;;;; This program is distributed in the hope that it will be useful,
+;;;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;;;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;;;; GNU General Public License for more details.
+;;;;
+;;;; You should have received a copy of the GNU General Public License
+;;;; along with this program; if not, write to the Free Software
+;;;; Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
+;;;; USA.
+;;;;
+;;;;           Author: Erick Gallesio [eg@unice.fr]
+;;;;    Creation date: 14-Mar-2001 13:57 (eg)
+;;;;
+
+
+
+(define (panic . l)
+  (apply error 'panic (string-append "*** PANIC *** "  (car l)) (cdr l)))
+
+(define (%path-without-cwd path)
+  (let ((cwd (getcwd)))
+    (if (eq? (string-position cwd path) 0)
+        (substring path
+                   (+  1 (string-length cwd))
+                   (string-length path))
+        path)))
+
+;;; ----------------------------------------------------------------------
+;;;     compiler-error ...
+;;; ----------------------------------------------------------------------
+(define (compiler-error where who fmt . l)
+  (let* ((where (if (eq? where (void)) "" (format "~A: " where)))
+         (loc   (if (%epair? who)
+                    (format "~A:~A: "
+                            (%path-without-cwd (%epair-file who))
+                            (%epair-line who))
+                    "")))
+    (if *compiler-port*
+        ;; Compiling a file
+        (apply format
+               (current-error-port)
+               (format "~AError: ~A~A\n" loc where fmt)
+               l)
+        ;; Interactive compilation
+        (apply error
+               (string-append where fmt)
+               l))))
+
+;;; ----------------------------------------------------------------------
+;;;     compiler-warning ...
+;;; ----------------------------------------------------------------------
+(define (compiler-warning where who fmt . l)
+  (let* ((where (if (eq? where (void)) "" (format "~A: " where)))
+         (loc   (if (%epair? who)
+                    (format "~A:~A: "
+                            (%path-without-cwd (%epair-file who))
+                            (%epair-line who))
+                    "")))
+    (if (or #t *compiler-port*)   ;; FIXME 
+        ;; Compiling a file
+        (apply format
+               (current-error-port)
+               (format "~Awarning: ~A~A\n" loc where fmt)
+               l)
+        ;; Interactive compilation
+        (apply format
+               (current-error-port)
+               (format "**** Warning;\n~A~A\n" where fmt)
+               l))))
+
+;;//(define (%compiler-message kind where fmt l)
+;;//  ;; Write an Emacs compatible header
+;;//  (when *compiler-port*
+;;//    (format (current-error-port)
+;;//        "~A:~A: ~A "
+;;//        (port-file-name *compiler-port*)
+;;//        (port-current-line *compiler-port*)
+;;//        kind))
+;;//
+;;//  (let ((location (if (eq? where (void)) "" (format #f " ~A:" where))))
+;;//    (apply format
+;;//       (current-error-port)
+;;//       (format #f "~A ~A\n" location fmt)
+;;//       l)))
+;;//
+;;//
+;;//(define (compiler-warning where fmt . l)
+;;//  (%compiler-message "warning" where fmt l))
+
+;; ----------------------------------------------------------------------
+(define (unquote . l)
+  (error 'unquote "used outside of a quasiquote context"))
+
+(define (unquote-splicing . l)
+  (error 'unquote-splicing "used outside of a quasiquote context"))
+
+#|
+<doc R7RS syntax-error
+ * (syntax-error message arg1 ...)
+ *
+ * TODO
+doc>
+|#
+
+(define (%syntax-error msg . args)
+  (cond
+   ((string? msg)              ; R7RS synax-error call: (syntax-error "message " 1 2 3)
+    (apply compiler-error (void) args msg args))
+
+   ((symbol? msg)              ; Extension: something like (syntax-error 'foo "not happy ~S" 100)
+    (if (or (null? args) (not (string? (car args))))
+        (error 'syntax-error "bad parameters ~S" (cons msg args))
+        (apply compiler-error msg args args)))
+
+   (else
+    (error 'syntax-error "bad parameters ~S" (cons msg args)))))
+

@@ -1,0 +1,1 @@
+("8.8.0.10" ta6le ("bdfc8c1a942a99e0cc979bd8b9da42a6b2684688" . "f48defb0369b0bb66516002fff779d14640f1953") (collects #"dynext" #"filename-version.rkt") (collects #"racket" #"base.rkt") (collects #"racket" #"runtime-config.rkt") (collects #"setup" #"cross-system.rkt"))

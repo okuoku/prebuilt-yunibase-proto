@@ -1,0 +1,1 @@
+("8.8.0.10" ta6le ("9c9f73965cd7d81f2cf9855770a6aecf59b435c6" . "b3ab3e5ab8ac190dfc8e2e7c3fe85e0a3131bb1f") (collects #"mzscheme" #"main.rkt") (collects #"srfi" #"1.rkt"))

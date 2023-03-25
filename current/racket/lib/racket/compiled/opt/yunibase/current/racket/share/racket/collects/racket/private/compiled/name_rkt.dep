@@ -1,0 +1,1 @@
+("8.8.0.10" ta6le ("6eff034c76b62689f93087daadea00c0902dafc7" . "384f584da73086478938f812c74f8aec0e43a32d") (collects #"racket" #"private" #"cond.rkt") (collects #"racket" #"private" #"define.rkt") (collects #"racket" #"private" #"qq-and-or.rkt"))

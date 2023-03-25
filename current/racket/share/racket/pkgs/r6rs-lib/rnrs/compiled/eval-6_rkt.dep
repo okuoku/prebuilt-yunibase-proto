@@ -1,0 +1,1 @@
+("8.8.0.10" ta6le ("144102a99d682c673bb1b860d637f36c10b38b91" . "5adb53e239a34d59b781e7c5f6a73b377e10fb00") (collects #"r6rs" #"main.rkt") (collects #"r6rs" #"private" #"parse-ref.rkt") (collects #"r6rs" #"private" #"prelims.rkt") (collects #"scheme" #"base.rkt") (collects #"scheme" #"mpair.rkt") (collects #"scheme" #"runtime-config.rkt"))

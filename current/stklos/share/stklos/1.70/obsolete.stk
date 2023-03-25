@@ -1,0 +1,129 @@
+;;;;
+;;;; obsolete.stk       -- Definition of functions which are obsolete.
+;;;;                       Function defined here are candidate to disappear.
+;;;;
+;;;; Copyright © 2002-2023 Erick Gallesio <eg@stklos.net>
+;;;;
+;;;;
+;;;; This program is free software; you can redistribute it and/or modify
+;;;; it under the terms of the GNU General Public License as published by
+;;;; the Free Software Foundation; either version 2 of the License, or
+;;;; (at your option) any later version.
+;;;;
+;;;; This program is distributed in the hope that it will be useful,
+;;;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;;;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;;;; GNU General Public License for more details.
+;;;;
+;;;; You should have received a copy of the GNU General Public License
+;;;; along with this program; if not, write to the Free Software
+;;;; Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
+;;;; USA.
+;;;;
+;;;;           Author: Erick Gallesio [eg@essi.fr]
+;;;;    Creation date: 11-Jun-2002 17:54 (eg)
+;;;;
+
+(export string-lower string-upper
+        set-load-path! set-load-suffixes!
+        flush rewind-file-port
+        hash-table->list hash-table-put! hash-table-get hash-table-remove!
+        stklos-pragma
+        remove-directory
+        %build-path-from-shell-variable
+        copy-tree %set-std-port!
+        make-box make-constant-box box-set!
+        string-index argv
+        fxdiv fxrem fxmod fx< fx<= fx> fx>= fx=
+        make-directory make-directories
+        process-signal
+        compiler:generate-signature)
+
+
+;;; 11-Jun-2002 (v0.53)
+(define string-lower string-downcase)
+(define string-upper string-upcase)
+
+;;; 29-Aug-2004
+(define (set-load-path! new-path)
+  (format (current-error-port)
+          "*** Obsolete function set-load-path!. Use load-path instead.\n")
+  (load-path new-path))
+
+(define (set-load-suffixes! suffixes)
+  (format (current-error-port)
+          "*** Obsolete function set-load-suffixes!. Use load-suffixes instead.\n")
+  (load-suffixes suffixes))
+
+;; 23-Sep-2004 (v 0.59)
+(define flush flush-output-port)
+
+;; 19-May-2005 (v 0.62)
+(define rewind-file-port port-rewind)
+
+;; 27-Oct-2005 (v 0.71)
+(define hash-table->list hash-table->alist)
+(define hash-table-put! hash-table-set!)
+(define (hash-table-get ht key :optional (default #f default?))
+  (if default?
+      (hash-table-ref/default ht key default)
+      (hash-table-ref ht key)))
+(define hash-table-remove!  hash-table-delete!)
+
+
+;; 23-Nov-2006 (v 0.82)
+(define (stklos-pragma . args)
+  (error "Don't use anymore pragma, but compiler:warn-use-undef parameter"))
+(define-reader-ctor 'pragma stklos-pragma)
+
+
+;; 12-Feb-2007 (v0.83)
+(define remove-directory delete-directory)
+
+;; 05-May-2007 (v0.83)
+;; current-second is now R7RS
+;(define current-second current-seconds)
+
+;; 04-Jun-2008 (v0.99)
+(define %build-path-from-shell-variable build-path-from-shell-variable)
+
+;; 05-Oct-2017 (v1.21)
+(define copy-tree list-copy)
+
+;; 12-Aug-2020 (v1.40) -- Use parameter object instead
+(define (%set-std-port!  index port)
+  (case index
+    ((0) (current-input-port port))
+    ((1) (current-output-port port))
+    ((2) (current-error-port port))
+    (else (error '%set-std-port! "bad port number" index))))
+
+;; 04-Sep-2020(v1.50) use the SRFI 111 and SRFI 195 for boxes
+(define make-box box)
+(define make-constant-box constant-box)
+(define box-set! set-box!)
+
+;; 13-Sep-2020(v1.50)
+(define string-index string-position) ; a different string-index is defined in SRFI-13
+(define argv command-args)
+
+;; 08-Mar-2021
+;; New names comply with SRFI-143 (Fixnums)
+(define fxdiv fxquotient)
+(define fxrem fxremainder)
+(define fxmod fxmodulo)
+(define fx<   fx<?)
+(define fx<=  fx<=?)
+(define fx>   fx>?)
+(define fx>=  fx>=?)
+(define fx=   fx=?)
+
+;; 02-Apr-2021
+(define make-directory   create-directory)
+(define make-directories create-directories)
+
+;; 17-Dec-2022
+(define process-signal process-send-signal)
+
+;; 28-Feb-2023
+(define compiler:generate-signature compiler:keep-formals)

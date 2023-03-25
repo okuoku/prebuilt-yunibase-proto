@@ -1,0 +1,1 @@
+("8.8.0.10" ta6le ("d9f09fbfb1c39268646a92885f0555a227f7bb75" . "4f02561114e22ab9424a434dec9562e78300419c") (collects #"racket" #"udp.rkt") (collects #"scheme" #"private" #"provider" #"lang" #"reader.rkt") (collects #"scheme" #"private" #"provider" #"lang.rkt"))

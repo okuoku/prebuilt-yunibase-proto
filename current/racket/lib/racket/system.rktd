@@ -1,0 +1,1 @@
+#hash((arch . x86_64) (fs-change . #(supported scalable #f file-level)) (gc . cs) (library-subpath . #"x86_64-linux") (library-subpath-convention . unix) (link . static) (machine . "x86_64-linux") (os . unix) (os* . linux) (so-mode . local) (so-suffix . #".so") (target-machine . ta6le) (vm . chez-scheme) (word . 64))

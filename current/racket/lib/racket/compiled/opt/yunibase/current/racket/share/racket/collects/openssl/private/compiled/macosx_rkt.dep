@@ -1,0 +1,1 @@
+("8.8.0.10" ta6le ("96834b6ede6a2b9e0a25192299d2683ed41ca0bb" . "b6775065430b985127ee299df4b644e586610786") (collects #"ffi" #"unsafe" #"define.rkt") (collects #"ffi" #"unsafe" #"objc.rkt") (collects #"ffi" #"unsafe.rkt") (collects #"openssl" #"private" #"add-cert.rkt") (collects #"racket" #"base.rkt") (collects #"racket" #"runtime-config.rkt"))

@@ -1,0 +1,13 @@
+((installed-files
+   "/opt/yunibase/current/chicken5/lib/chicken/11/srfi-69.o"
+   "/opt/yunibase/current/chicken5/lib/chicken/11/srfi-69.link"
+   "/opt/yunibase/current/chicken5/lib/chicken/11/srfi-69.so"
+   "/opt/yunibase/current/chicken5/lib/chicken/11/srfi-69.types"
+   "/opt/yunibase/current/chicken5/lib/chicken/11/srfi-69.import.so")
+ (synopsis "SRFI-69 hash-table library")
+ (author "The CHICKEN Team")
+ (maintainer "The CHICKEN Team")
+ (category data)
+ (license "BSD")
+ (components
+   (extension srfi-69 (csc-options "-O3" "-d0") (types-file (predefined)))))

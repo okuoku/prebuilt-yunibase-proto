@@ -1,0 +1,1 @@
+("8.8.0.10" ta6le ("3a29b005477088711992009f3814a7bd5e6f5b11" . "e5fcdf8190cc6ad081f9b876bd88df7bdae8f230") (collects #"mzlib" #"private" #"sigmatch.rkt") (collects #"mzlib" #"unit200.rkt") (collects #"mzscheme" #"main.rkt") (collects #"racket" #"base.rkt") (collects #"syntax" #"context.rkt") (collects #"syntax" #"struct.rkt") (collects #"syntax" #"stx.rkt"))

@@ -1,0 +1,1 @@
+("8.8.0.10" ta6le ("e31fdc694c1a1ae12cd0f0213109fd6777acfba8" . "ada1f09307de4617e8994621b645172147787080") (collects #"racket" #"runtime-config.rkt") (collects #"s-exp" #"lang" #"reader.rkt") (collects #"srfi" #"61" #"cond.rkt") (collects #"srfi" #"provider.rkt"))

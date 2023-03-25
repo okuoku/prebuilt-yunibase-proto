@@ -1,0 +1,1 @@
+("8.8.0.10" ta6le ("53c31f9478a828c992d2201eb1bbacc6358ddee5" . "d86c9791c4430716aad34becd674254a759b15a4") (collects #"mzscheme" #"main.rkt") (collects #"r5rs" #"private" #"r5rs-trans.rkt") (collects #"racket" #"undefined.rkt") (collects #"scheme" #"base.rkt") (collects #"scheme" #"mpair.rkt") (collects #"scheme" #"runtime-config.rkt") (collects #"syntax" #"kerncase.rkt"))

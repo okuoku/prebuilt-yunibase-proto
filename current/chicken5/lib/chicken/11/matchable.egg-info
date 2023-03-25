@@ -1,0 +1,11 @@
+((installed-files
+   "/opt/yunibase/current/chicken5/lib/chicken/11/matchable.o"
+   "/opt/yunibase/current/chicken5/lib/chicken/11/matchable.link"
+   "/opt/yunibase/current/chicken5/lib/chicken/11/matchable.so"
+   "/opt/yunibase/current/chicken5/lib/chicken/11/matchable.import.so")
+ (synopsis "Hygienic MATCH replacement")
+ (license "Public Domain")
+ (category lang-exts)
+ (author "Alex Shinn")
+ (test-dependencies test)
+ (components (extension matchable)))

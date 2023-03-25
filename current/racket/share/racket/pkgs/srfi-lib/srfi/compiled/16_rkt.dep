@@ -1,0 +1,1 @@
+("8.8.0.10" ta6le ("aed504d3c965d9d0bcb42aadc66a006e12538fe5" . "aaf0145816a9f2a4903ffa9f8eb34cd6c095eb13") (collects #"scheme" #"base.rkt") (collects #"scheme" #"runtime-config.rkt"))

@@ -1,0 +1,1 @@
+("8.8.0.10" ta6le ("ffda20046018882caaeb58a2a3c94aa67d6884dd" . "fbbe1a667df3dbec852174ff9c167c27ba0073a0") (collects #"net" #"qp-sig.rkt") (collects #"net" #"qp.rkt") (collects #"racket" #"base.rkt") (collects #"racket" #"runtime-config.rkt") (collects #"racket" #"unit.rkt"))

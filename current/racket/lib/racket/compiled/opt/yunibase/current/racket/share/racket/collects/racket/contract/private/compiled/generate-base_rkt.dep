@@ -1,0 +1,1 @@
+("8.8.0.10" ta6le ("0a22db8e487e39f55c5fdac1a65bc47a31293caf" . "c72fc514c6f40506cb7de173276790ebf43bd56c") (collects #"racket" #"base.rkt") (collects #"racket" #"contract" #"private" #"rand.rkt") (collects #"racket" #"private" #"math-predicates.rkt") (collects #"racket" #"runtime-config.rkt"))

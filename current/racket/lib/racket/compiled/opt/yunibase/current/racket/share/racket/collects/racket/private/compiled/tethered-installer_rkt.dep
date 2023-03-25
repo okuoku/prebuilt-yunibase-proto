@@ -1,0 +1,1 @@
+("8.8.0.10" ta6le ("ee404b72d8cbccd86d92a2ca44f11905ca4be20d" . "a791d95ba413647a3a2dbc78f07982894b2e574b") (collects #"compiler" #"embed.rkt") (collects #"launcher" #"main.rkt") (collects #"racket" #"base.rkt") (collects #"racket" #"file.rkt") (collects #"racket" #"runtime-config.rkt") (collects #"setup" #"dirs.rkt"))

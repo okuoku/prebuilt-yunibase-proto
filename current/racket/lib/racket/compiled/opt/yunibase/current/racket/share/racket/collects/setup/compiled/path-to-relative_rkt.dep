@@ -1,0 +1,1 @@
+("8.8.0.10" ta6le ("d5a0827d8065d06d220121dc6c58680cf612853e" . "ff8a4ee03369309f2fa4a71820c99a1db99f3f41") (collects #"pkg" #"path.rkt") (collects #"planet" #"config.rkt") (collects #"racket" #"base.rkt") (collects #"racket" #"runtime-config.rkt") (collects #"setup" #"dirs.rkt") (collects #"setup" #"path-relativize.rkt"))

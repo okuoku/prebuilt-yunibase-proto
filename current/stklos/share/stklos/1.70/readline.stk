@@ -1,0 +1,186 @@
+;;;;
+;;;; readline.stk       -- Access to the GNU-readline lib
+;;;;                       (or libedit if absent :-<)
+;;;;
+;;;; Copyright © 2007-2023 Erick Gallesio <eg@stklos.net>
+;;;;
+;;;;
+;;;; This program is free software; you can redistribute it and/or modify
+;;;; it under the terms of the GNU General Public License as published by
+;;;; the Free Software Foundation; either version 2 of the License, or
+;;;; (at your option) any later version.
+;;;;
+;;;; This program is distributed in the hope that it will be useful,
+;;;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;;;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;;;; GNU General Public License for more details.
+;;;;
+;;;; You should have received a copy of the GNU General Public License
+;;;; along with this program; if not, write to the Free Software
+;;;; Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
+;;;; USA.
+;;;;
+;;;;           Author: Erick Gallesio [eg@essi.fr]
+;;;;    Creation date: 25-Jun-2007 11:48 (eg)
+;;;;
+
+(define-module READLINE
+  (import SCHEME)
+  (export try-initialize-readline
+          readline add-history read-history
+          write-history read-with-history
+          rl-event-hook rl-input-timeout
+          rl-completer-function)
+
+
+;;;; In module READLINE
+(define readline             #f)
+(define add-history          #f)
+(define read-history         #f)
+(define write-history        #f)
+(define rl-event-hook        #f)
+(define rl-input-timeout     #f)
+
+
+(define (read-with-history :optional (prompt "> "))
+  (let ((line (readline prompt)))
+    (unless (or (eof-object? line) (equal? line ""))
+      (add-history line))
+    line))
+
+(define (try-initialize libname)
+  ;; Return #t if we were able to find a readline library
+  (with-handler
+   (lambda (c)
+     ;; If we are here, this probably because library is not present
+     #f)
+   (let ((%readline (make-external-function "readline"
+                                            '(:string)
+                                            :pointer
+                                            libname)))
+     (set! readline  (lambda (prompt)
+                       (let ((ptr (%readline prompt)))
+                         (if (eq? ptr (void))
+                             #eof
+                             (let ((str (cpointer->string ptr)))
+                               ;; GNU/Readline always returns a string which is
+                               ;; dynamically allocated. Take care of that.
+                               (free-bytes ptr)
+                               str)))))
+
+
+
+     (set! add-history (make-external-function "add_history"
+                                               '(:string)
+                                               :void
+                                               libname))
+
+     (set! read-history (make-external-function "read_history"
+                                                '(:string)
+                                                :int
+                                                libname))
+
+     (set! write-history (make-external-function  "write_history"
+                                                  '(:string)
+                                                  :int
+                                                  libname))
+
+     (when (%get-symbol-address "rl_set_keyboard_input_timeout" "")
+       ;; NOTE: The libedit version shipped with recent MasOS version doesn't
+       ;; provide the functions "rl_set_keyboard_input_timeout" and "rl_event_hook"
+       ;; These functions are used by the GTK extension when building GUI under the
+       ;; REPL.
+       (set! rl-input-timeout (make-external-function "rl_set_keyboard_input_timeout"
+                                                      '(:int)
+                                                      :int
+                                                      libname))
+       (set! rl-event-hook (%get-symbol-address "rl_event_hook" libname)))
+
+     (let ((support (if (%get-symbol-address "el_set" "")
+                        ;; We have found a realine library which is in fact
+                        ;; libedit (macos)
+                        'libedit
+                        'readline)))
+       ;; Retain that the kind of readline support we have
+       (key-set! *%system-state-plist* :readline support)))
+
+     ;; return #t to tell that everything is alright
+     #t))
+
+
+;; ======================================================================
+;;
+;; Completion support (heavily inspired from PR#373)
+;;
+;; ======================================================================
+
+;; A default completer function, which completes on the symbols usable
+;; at the global level of the current REPL module.
+(define (default-complete-function str)
+  (if (zero? (string-length str))
+      '()
+      ;; We just compare the prefix.
+      (let* ((symbols (module-symbols* (current-module)))
+             (size (string-length str))
+             (match (lambda (s)
+                      (and (>= (string-length s) size)
+                           (string=? str (substring s 0 size))))))
+        (filter match (map symbol->string symbols)))))
+
+;; The parameter rl-completer-function contains the function used
+;; to complete strings It defaults to default-complete-function
+(define rl-completer-function (make-parameter default-complete-function))
+
+#|
+  As an example, here is another completer function. This one tries to find
+  if str is a substring of a symbol defined at global level
+
+    (define (substring-complete-function str)
+      (if (zero? (string-length str))
+          '()
+          (let ((symbols (module-symbols* (current-module)))
+                (match (lambda (s) (string-find? str s))))
+            (filter match (map symbol->string symbols)))))
+|#
+
+
+;; readline-completion-generator is a generator of string completions.
+;; It takes as argument a string, 'str' and a state indicator, 'state'.
+;;
+;; - Completions will be searched for 'str'.
+;; - When state is #f a fresh list of completions is searched, and the first
+;; item is returned.
+;; - When state is #t the next of the current list is returned.
+;;
+;; This is written this way to match the expected behavior of the readline
+;; function rl_completion_matches.
+(define readline-completion-generator
+  (let ((ans '()))
+    (lambda (str state)
+      (when (not state)
+        (set! ans ((rl-completer-function) str)))
+      (if (null? ans)
+          ans
+          (let ((s (car ans)))
+            (set! ans (cdr ans))
+            s)))))
+
+
+;; ======================================================================
+;;
+;; Initialization
+;;
+;; ======================================================================
+(%compile-time-define %init-readline-completion-function)
+
+(define (try-initialize-readline)
+  ;; Try in sequence the GNU readline and BSD libedit (which has readline support)
+  (let* ((suffix (%shared-library-suffix))
+         (res (or (try-initialize (string-append "libreadline." suffix))
+                  (try-initialize (string-append "libedit."  suffix)))))
+    (when (and res (try-load (string-append "readline-complete." suffix)))
+      ;; We have found a readline library. Try to load completion support
+      (%init-readline-completion-function readline-completion-generator))
+    res))
+
+) ;; End of module READLINE

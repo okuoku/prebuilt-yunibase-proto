@@ -1,0 +1,1 @@
+("8.8.0.10" ta6le ("036896d58bea47126d508ac69e659ce39978d470" . "685a41a32426b95650efba6995b13e82dd6e7d96") (collects #"net" #"nntp-sig.rkt") (collects #"net" #"nntp.rkt") (collects #"racket" #"base.rkt") (collects #"racket" #"runtime-config.rkt") (collects #"racket" #"unit.rkt"))

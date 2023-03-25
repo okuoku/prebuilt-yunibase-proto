@@ -1,0 +1,302 @@
+This is vicare-typed.info, produced by makeinfo version 6.5 from
+vicare-typed.texi.
+
+This document describes version 0.4.1-devel.3 of Vicare Scheme, an R6RS
+compliant native compiler for the Scheme language, producing single
+threaded programs running on Intel x86 32-bit and 64-bit processors.
+_Vicare_ is pronounced the etruscan way.  The focus of this document is
+over the typed language extension.
+
+   The package, including its documentation, is distributed under the
+terms of the GNU General Public License (GPL) and can be downloaded
+from:
+
+      <https://bitbucket.org/marcomaggi/vicare-scheme/downloads>
+
+the home page of the project is at:
+
+               <http://marcomaggi.github.io/vicare.html>
+
+development takes place at:
+
+                <http://github.com/marcomaggi/vicare/>
+
+and, as a backup, at:
+
+           <https://bitbucket.org/marcomaggi/vicare-scheme/>
+
+Copyright (C) 2016-2017 by Marco Maggi.
+Copyright (C) 2006-2010 by Abdulaziz Ghuloum.
+
+     This program is free software: you can redistribute it and/or
+     modify it under the terms of the GNU General Public License version
+     3 as published by the Free Software Foundation.
+
+     This program is distributed in the hope that it will be useful, but
+     WITHOUT ANY WARRANTY; without even the implied warranty of
+     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+     General Public License for more details.
+
+     You should have received a copy of the GNU General Public License
+     along with this program.  If not, see
+     <http://www.gnu.org/licenses/>.
+
+   Trademarks used herein are the property of their respective owners.
+INFO-DIR-SECTION Development
+START-INFO-DIR-ENTRY
+* vicare-typed: (vicare-typed). Vicare Scheme's Typed Language.
+END-INFO-DIR-ENTRY
+
+
+Indirect:
+vicare-typed.info-1: 1770
+vicare-typed.info-2: 303853
+
+Tag Table:
+(Indirect)
+Node: Top1770
+Node: overview4511
+Node: overview philosophy5129
+Node: overview enabling10712
+Node: overview type ids13410
+Node: overview typed vars14781
+Node: annotations16263
+Node: annotations inserting17236
+Node: annotations syntaxes18941
+Node: annotations relations32548
+Node: annotations signatures37266
+Node: specifications41775
+Node: descriptors42426
+Node: descriptors retrieving43676
+Node: descriptors core44618
+Node: descriptors compound47937
+Node: descriptors compound pair49098
+Node: descriptors compound pair-of50055
+Node: descriptors compound list50954
+Node: descriptors compound list-of51945
+Node: descriptors compound vector52840
+Node: descriptors compound vector-of53859
+Node: descriptors compound condobj54779
+Node: descriptors compound enum55835
+Node: descriptors compound hashtable56761
+Node: descriptors compound alist57790
+Node: descriptors compound closure58813
+Node: descriptors compound union59775
+Node: descriptors compound intersect60684
+Node: descriptors compound complem61663
+Node: descriptors compound ancestor62584
+Node: descriptors other63705
+Node: descriptors other interface63983
+Node: descriptors signatures68247
+Node: descriptors signatures descriptors68661
+Node: descriptors signatures lambda69631
+Node: descriptors signatures case-lambda70839
+Node: descriptors relations71859
+Node: syntaxes76922
+Node: syntaxes type-of78047
+Node: syntaxes define81861
+Node: syntaxes new-delete84185
+Node: syntaxes predicates85504
+Node: syntaxes assert86393
+Node: syntaxes unsafe-cast97681
+Node: syntaxes case-type99951
+Node: syntaxes variables101477
+Node: syntaxes overloads114417
+Node: syntaxes operations120726
+Node: built-in123882
+Node: built-in void125954
+Node: built-in top128424
+Node: built-in bottom128861
+Node: built-in wildcard130446
+Node: built-in unique130973
+Node: built-in unique sentinel131303
+Node: built-in unique eof132104
+Node: built-in unique would-block132905
+Node: built-in booleans133772
+Node: built-in booleans boolean134125
+Node: built-in booleans true135122
+Node: built-in booleans false135975
+Node: built-in chars136813
+Node: built-in symbols141360
+Node: built-in symbols symbols141659
+Node: built-in symbols gensyms144732
+Node: built-in keywords145384
+Node: built-in pointers146396
+Node: built-in transcoders149013
+Node: built-in procedures150352
+Node: built-in procedures procedures151338
+Node: built-in procedures thunk151829
+Node: built-in procedures parameter152251
+Node: built-in procedures type-predicate152844
+Node: built-in procedures type-destructor153325
+Node: built-in procedures type-printer153835
+Node: built-in procedures equality-predicate154375
+Node: built-in procedures comparison-procedure154890
+Node: built-in procedures hash-function155413
+Node: built-in procedures type-method-retriever155922
+Node: built-in numerics156463
+Node: built-in numerics number157866
+Node: built-in numerics complex163267
+Node: built-in numerics real-valued163890
+Node: built-in numerics real164531
+Node: built-in numerics real base165157
+Node: built-in numerics real positive167986
+Node: built-in numerics real negative168444
+Node: built-in numerics real zero168902
+Node: built-in numerics real non-zero169314
+Node: built-in numerics real non-negative169767
+Node: built-in numerics rational-valued170217
+Node: built-in numerics rational170910
+Node: built-in numerics rational base171464
+Node: built-in numerics rational exact172070
+Node: built-in numerics rational non-negative172521
+Node: built-in numerics rational non-zero173068
+Node: built-in numerics integer-valued173541
+Node: built-in numerics integer174237
+Node: built-in numerics exact-integer175829
+Node: built-in numerics exact-integer base176592
+Node: built-in numerics exact-integer positive178630
+Node: built-in numerics exact-integer negative179145
+Node: built-in numerics exact-integer non-zero179664
+Node: built-in numerics exact-integer non-positive180178
+Node: built-in numerics exact-integer non-negative180734
+Node: built-in numerics fixnums181241
+Node: built-in numerics fixnums base181984
+Node: built-in numerics fixnums positive182696
+Node: built-in numerics fixnums negative183418
+Node: built-in numerics fixnums zero184140
+Node: built-in numerics fixnums non-positive184819
+Node: built-in numerics fixnums non-negative185312
+Node: built-in numerics fixnums non-zero185809
+Node: built-in numerics bignums186238
+Node: built-in numerics bignums base186663
+Node: built-in numerics bignums positive187823
+Node: built-in numerics bignums negative188545
+Node: built-in numerics flonums189228
+Node: built-in numerics flonums base190123
+Node: built-in numerics flonums zero190837
+Node: built-in numerics flonums positive-zero191544
+Node: built-in numerics flonums negative-zero192374
+Node: built-in numerics flonums non-zero193208
+Node: built-in numerics flonums positive193681
+Node: built-in numerics flonums negative194470
+Node: built-in numerics flonums non-positive195263
+Node: built-in numerics flonums non-negative195792
+Node: built-in numerics ratnums196278
+Node: built-in numerics ratnums base196704
+Node: built-in numerics ratnums positive197426
+Node: built-in numerics ratnums negative198168
+Node: built-in numerics compnums198871
+Node: built-in numerics compnums base199525
+Node: built-in numerics compnums exact200258
+Node: built-in numerics compnums inexact201445
+Node: built-in numerics compnums zero202423
+Node: built-in numerics compnums non-zero-inexact203881
+Node: built-in numerics compnums non-zero204810
+Node: built-in numerics cflonums205320
+Node: built-in numerics cflonums base205746
+Node: built-in numerics cflonums zero206478
+Node: built-in numerics cflonums non-zero207345
+Node: built-in numerics bytes208120
+Node: built-in numerics bytes base208749
+Node: built-in numerics bytes zero209376
+Node: built-in numerics bytes positive210039
+Node: built-in numerics bytes negative210761
+Node: built-in numerics bytes non-positive211487
+Node: built-in numerics bytes non-negative211959
+Node: built-in numerics octets212390
+Node: built-in numerics octets base212801
+Node: built-in numerics octets zero213453
+Node: built-in numerics octets positive214131
+Node: built-in numerics exactness214840
+Node: built-in numerics sign215414
+Node: built-in strings216868
+Node: built-in strings base217213
+Node: built-in strings empty223496
+Node: built-in strings non-empty224085
+Node: built-in vectors225012
+Node: built-in vectors base225354
+Node: built-in vectors empty228084
+Node: built-in vectors non-empty228663
+Node: built-in lists229551
+Node: built-in lists base229897
+Node: built-in lists null231420
+Node: built-in lists non-empty232276
+Node: built-in pairs233637
+Node: built-in pairs base233994
+Node: built-in pairs weak234979
+Node: built-in pairs immutable235618
+Node: built-in bytevectors236676
+Node: built-in bytevectors base237064
+Node: built-in bytevectors empty239095
+Node: built-in bytevectors non-empty239686
+Node: built-in hashtables240365
+Node: built-in hashtables base240856
+Node: built-in hashtables eq241356
+Node: built-in hashtables eqv241963
+Node: built-in hashtables equiv242582
+Node: built-in hashtables tcbucket243283
+Node: built-in structs243881
+Node: built-in structs base244190
+Node: built-in structs std246586
+Node: built-in records249345
+Node: built-in records base249730
+Node: built-in records rtd251084
+Node: built-in records rcd253671
+Node: built-in conditions255065
+Node: built-in conditions base255381
+Node: built-in conditions compound256228
+Node: built-in ports256810
+Node: built-in ports base257513
+Node: built-in ports texin260952
+Node: built-in ports texou262254
+Node: built-in ports texio263587
+Node: built-in ports binin265672
+Node: built-in ports binou266428
+Node: built-in ports binio267167
+Node: built-in ports labels268121
+Node: built-in ports labels input268905
+Node: built-in ports labels output272911
+Node: built-in ports labels input/output276980
+Node: built-in ports labels binary281404
+Node: built-in ports labels textual285306
+Node: built-in ports labels binin289265
+Node: built-in ports labels binou293528
+Node: built-in ports labels texin297788
+Node: built-in ports labels texou303853
+Node: built-in ports misc308111
+Node: built-in enum-set308699
+Node: built-in time311674
+Node: built-in time time311969
+Node: built-in time epoch315789
+Node: built-in promises317038
+Node: built-in utsname318039
+Node: built-in memory-block319518
+Node: built-in reader-annotation320787
+Node: built-in stats322461
+Node: built-in misc325515
+Node: methods326972
+Node: methods concrete327984
+Node: methods concrete overloaded329517
+Node: methods concrete fields331174
+Node: methods concrete override332046
+Node: methods virtual333008
+Node: methods sealing336369
+Node: methods calling337989
+Node: protlev343885
+Node: mixins349092
+Node: interfaces352710
+Node: interfaces intro353421
+Node: interfaces defs356080
+Node: interfaces descr359096
+Node: interfaces examples359831
+Node: labels376047
+Node: friends382929
+Node: Package License383823
+Node: references421379
+Node: concept index421560
+Node: function index423656
+Node: variable index553585
+Node: type index553766
+
+End Tag Table

@@ -1,0 +1,132 @@
+;;;;
+;;;; b i g m a t c h  . s t k       -- The bigloo match-case and match-lambda
+;;;;
+;;;; Copyright © 1997-2023 Erick Gallesio <eg@stklos.net>
+;;;;
+;;;; This program is free software; you can redistribute it and/or modify
+;;;; it under the terms of the GNU General Public License as published by
+;;;; the Free Software Foundation; either version 2 of the License, or
+;;;; (at your option) any later version.
+;;;;
+;;;; This program is distributed in the hope that it will be useful,
+;;;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;;;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;;;; GNU General Public License for more details.
+;;;;
+;;;; You should have received a copy of the GNU General Public License
+;;;; along with this program; if not, write to the Free Software
+;;;; Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
+;;;; USA.
+;;;;
+;;;;           Author: Erick Gallesio [eg@kaolin.unice.fr]
+;;;;    Creation date: 28-Oct-1997 20:47
+;;;;
+
+;;;; This file implements code for loading the MATCH-CASE and MATCH-LAMBDA
+;;;; of the Bigloo system. Bigloo files are unmodified and could be probably
+;;;; adapted for STk (in particular, the code can deal with structures, and
+;;;; a useful adaptation could be to manage objects instead).
+
+#|
+<doc EXT-SYNTAX match-lambda
+ * (match-lambda <clause> ...)
+ *
+ * |match-lambda| expands into a lambda-expression expecting an argument
+ * which, once applied to an expression, behaves exactly like a
+ * |match-case| expression.
+ * @lisp
+ * ((match-lambda
+ *   ((?x ?x) 'foo)
+ *   ((?x ?- ?x) 'bar))
+ *  '(a b a))           => bar
+ * @end lisp
+doc>
+|#
+;; NOTE: The macro is defined at boot time to:
+;;(define-macro (match-lambda  . clauses)
+;;  (expand-match-lambda  (cons '()  clauses)))
+;;
+
+
+#|
+<doc EXT-SYNTAX match-case
+ * (match-case <key> <clause> ...)
+ *
+ * The argument key may be any expression and each clause has the form
+ * @lisp
+ * (<pattern> <expression> ...)
+ * @end lisp
+ * A match-case expression is evaluated as follows: |<key>| is evaluated
+ * and the result is compared with each successive pattern. If the |<pattern>|
+ * in some clause yields a match, then the `|<expression>|`s in that clause are
+ * evaluated from left to right in an environment where the pattern variables
+ * are bound to the corresponding subparts of |<key>|, and the result of the
+ * last expression in that clause is returned as the result of the
+ * |match-case| expression. If no pattern in any clause matches the |<key>|,
+ * then, if there is an |else| clause, its expressions are evaluated and
+ * the result of the last is the result of the whole |match-case|
+ * expression; otherwise the result of the |match-case| expression
+ * is unspecified.
+ *
+ * The equality predicate used for tests is |eq?|.
+ * @lisp
+ * (match-case '(a b a)
+ *    ((?x ?x) 'foo)
+ *    ((?x ?- ?x) 'bar))   => bar
+ *
+ * (match-case '(a (b c) d)
+ *    ((?x ?y) (list 'length=2 y x))
+ *    ((?x ?y ?z) (list 'length=3 z y x)))
+ *                         => (length=3 d (b c) a)
+ * @end lisp
+doc>
+|#
+;; NOTE: The macro is defined at boot time to:
+;;(define-macro (match-case expr . clauses)
+;;  `((match-lambda  ,@clauses) ,expr))
+
+(define-module MATCH
+   (export  expand-match-case expand-match-lambda)
+
+   ;; labels
+   (define-macro (labels bindings . body)
+     (define (expand binding)
+       (when (< (length binding) 3)
+         (error 'labels "bad binding ~S" binding))
+       `(,(car binding) (lambda ,(cadr binding) ,@(cddr binding))))
+     `(letrec ,(map expand bindings)
+        ,@body))
+
+   ;; define-inline
+   (define-macro (define-inline args . body)
+     `(define ,args ,@body))
+
+   ;; define-module
+   (define-macro (module name . clauses)
+     `(void))
+
+   ;; fx functions
+   (define =fx  fx=)
+   (define >=fx fx>=)
+   (define <=fx fx<=)
+   (define <fx  fx<)
+   (define >fx  fx>)
+
+   (define +fx fx+)
+   (define -fx fx-)
+   (define *fx fx*)
+   (define /fx fxdiv)
+
+   ;;
+   ;; WARNING: Order is important
+   ;;
+   (include-file "Match.d/s2cfun.scm")
+   (include-file "Match.d/normalize.scm")
+   (include-file "Match.d/descr.scm")
+   (include-file "Match.d/compiler.scm")
+   (include-file "Match.d/mexpand.scm"))
+
+(select-module STklos)
+(import MATCH)
+
+(provide "bigmatch")

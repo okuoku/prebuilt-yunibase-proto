@@ -1,0 +1,1 @@
+("8.8.0.10" ta6le ("c65a1058798d56394109788cb33aa31584034c1f" . "ce3eb79ca1c7063deb014737de9cb054da170fc8") (collects #"net" #"base64.rkt") (collects #"net" #"head.rkt") (collects #"net" #"mime-util.rkt") (collects #"net" #"qp.rkt") (collects #"racket" #"base.rkt") (collects #"racket" #"port.rkt") (collects #"racket" #"runtime-config.rkt"))

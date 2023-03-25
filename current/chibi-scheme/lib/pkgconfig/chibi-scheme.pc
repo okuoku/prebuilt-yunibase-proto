@@ -1,0 +1,14 @@
+# pkg-config
+prefix=/opt/yunibase/current/chibi-scheme
+exec_prefix=${prefix}
+libdir=/opt/yunibase/current/chibi-scheme/lib
+includedir=${prefix}/include
+version=0.10.0
+
+Name: chibi-scheme
+URL: http://synthcode.com/scheme/chibi/
+Description: Minimal Scheme Implementation for use as an Extension Language
+Version: ${version}
+Libs: -L${libdir} -lchibi-scheme
+Libs.private: -dl -lm
+Cflags: -I${includedir}

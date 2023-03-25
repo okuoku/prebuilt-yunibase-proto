@@ -1,0 +1,1 @@
+("8.8.0.10" ta6le ("e997f7093d3d7ce1de622f16a193400dfce4ff9d" . "6d044bd31954eac82d2839aaa4ce97f977f03f1f") (collects #"net" #"ftp-sig.rkt") (collects #"net" #"ftp.rkt") (collects #"racket" #"base.rkt") (collects #"racket" #"runtime-config.rkt") (collects #"racket" #"unit.rkt"))

@@ -1,0 +1,1 @@
+("8.8.0.10" ta6le ("7b298b5cee8a3200972706cfed25c4972ce47c33" . "be23878564cfc8f91ad68413b0d8d41b8748b827") (collects #"mzlib" #"cm-accomplice.rkt") (collects #"mzlib" #"etc.rkt") (collects #"mzscheme" #"main.rkt") (collects #"racket" #"private" #"increader.rkt") (collects #"syntax" #"stx.rkt"))

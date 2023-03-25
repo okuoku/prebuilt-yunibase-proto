@@ -1,0 +1,1 @@
+("8.8.0.10" ta6le ("80cee5f08e1f03a060dd7a2f23fe847ad80b8dcb" . "9f55b5b82f09a59441f8996af740930d5916ecaf") (collects #"racket" #"base.rkt") (collects #"racket" #"contract" #"base.rkt") (collects #"racket" #"runtime-config.rkt") (collects #"syntax" #"private" #"modcode-noctc.rkt"))

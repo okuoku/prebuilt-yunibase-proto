@@ -1,0 +1,1 @@
+("8.8.0.10" ta6le ("3e4c7f3c1fcbbfbac87a524d4c74438a0bb6b2ca" . "ad45f3f2006427f26038d4c322867e4a516d7371") (collects #"racket" #"async-channel.rkt") (collects #"scheme" #"private" #"provider" #"lang" #"reader.rkt") (collects #"scheme" #"private" #"provider" #"lang.rkt"))

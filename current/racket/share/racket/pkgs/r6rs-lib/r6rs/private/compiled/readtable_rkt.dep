@@ -1,0 +1,1 @@
+("8.8.0.10" ta6le ("6e881960cf77d4baffa10fb0f9422e72d75ad4b3" . "84fa507e5b2b27acac9bbd24f67bcbfa8494dd60") (collects #"scheme" #"base.rkt") (collects #"scheme" #"promise.rkt") (collects #"scheme" #"runtime-config.rkt") (collects #"syntax" #"readerr.rkt"))

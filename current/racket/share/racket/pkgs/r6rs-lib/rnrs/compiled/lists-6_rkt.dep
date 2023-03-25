@@ -1,0 +1,1 @@
+("8.8.0.10" ta6le ("b56555577348a670e02c24038383ec773577cdfa" . "3d9a802771155b1f8f472476b90894c067736b5f") (collects #"r6rs" #"lang" #"reader.rkt") (collects #"r6rs" #"main.rkt") (collects #"r6rs" #"private" #"prelims.rkt") (collects #"rnrs" #"base-6.rkt") (collects #"rnrs" #"control-6.rkt"))

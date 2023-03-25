@@ -1,0 +1,1 @@
+("8.8.0.10" ta6le ("0fef8390e75b99e5b09b994d53bb54377e0b6628" . "b044a4d78a2d65e822d644585833bb44471ef0d3") (collects #"net" #"tcp-sig.rkt") (collects #"racket" #"async-channel.rkt") (collects #"racket" #"base.rkt") (collects #"racket" #"runtime-config.rkt") (collects #"racket" #"tcp.rkt") (collects #"racket" #"unit.rkt"))

@@ -1,0 +1,1 @@
+("8.8.0.10" ta6le ("a979a46365af50f1aaa574cc5848204158664d9d" . "ef858272469a1bb946d1beaace97f0fa14ddbe04") (collects #"racket" #"base.rkt") (collects #"racket" #"contract" #"base.rkt") (collects #"racket" #"runtime-config.rkt") (collects #"racket" #"syntax.rkt") (collects #"syntax" #"parse" #"private" #"residual-ct.rkt") (collects #"syntax" #"private" #"id-table.rkt"))

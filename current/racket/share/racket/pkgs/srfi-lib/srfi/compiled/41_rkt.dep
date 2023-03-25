@@ -1,0 +1,1 @@
+("8.8.0.10" ta6le ("ecc2c4a72d7e9b0a159d5d0289f40500b31cada6" . "78fde0a7e6d5ca2a1e51857d94f581847406337f") (collects #"mzscheme" #"main.rkt") (collects #"srfi" #"41" #"streams.rkt"))

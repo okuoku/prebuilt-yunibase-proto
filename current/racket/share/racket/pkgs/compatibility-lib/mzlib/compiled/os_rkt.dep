@@ -1,0 +1,1 @@
+("8.8.0.10" ta6le ("1338dec54693c41b7ae681f6cf0bf6211361d74b" . "1f311b918721176f8c4f6de54ce96b3ca720249d") (collects #"ffi" #"cvector.rkt") (collects #"ffi" #"unsafe.rkt") (collects #"ffi" #"winapi.rkt") (collects #"mzlib" #"etc.rkt") (collects #"mzscheme" #"lang" #"reader.rkt") (collects #"mzscheme" #"main.rkt"))

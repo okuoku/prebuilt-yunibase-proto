@@ -1,0 +1,152 @@
+((installed-files
+   "/opt/yunibase/current/chicken5/lib/chicken/11/r7rs.o"
+   "/opt/yunibase/current/chicken5/lib/chicken/11/r7rs.link"
+   "/opt/yunibase/current/chicken5/lib/chicken/11/r7rs.so"
+   "/opt/yunibase/current/chicken5/lib/chicken/11/r7rs.import.so"
+   "/opt/yunibase/current/chicken5/lib/chicken/11/r7rs-support.o"
+   "/opt/yunibase/current/chicken5/lib/chicken/11/r7rs-support.link"
+   "/opt/yunibase/current/chicken5/lib/chicken/11/r7rs-support.so"
+   "/opt/yunibase/current/chicken5/lib/chicken/11/r7rs-support.import.so"
+   "/opt/yunibase/current/chicken5/lib/chicken/11/r7rs-library.o"
+   "/opt/yunibase/current/chicken5/lib/chicken/11/r7rs-library.link"
+   "/opt/yunibase/current/chicken5/lib/chicken/11/r7rs-library.so"
+   "/opt/yunibase/current/chicken5/lib/chicken/11/r7rs-library.import.so"
+   "/opt/yunibase/current/chicken5/lib/chicken/11/r7rs-compile-time.o"
+   "/opt/yunibase/current/chicken5/lib/chicken/11/r7rs-compile-time.link"
+   "/opt/yunibase/current/chicken5/lib/chicken/11/r7rs-compile-time.so"
+   "/opt/yunibase/current/chicken5/lib/chicken/11/r7rs-compile-time.import.so"
+   "/opt/yunibase/current/chicken5/lib/chicken/11/scheme.base.o"
+   "/opt/yunibase/current/chicken5/lib/chicken/11/scheme.base.link"
+   "/opt/yunibase/current/chicken5/lib/chicken/11/scheme.base.so"
+   "/opt/yunibase/current/chicken5/lib/chicken/11/scheme.base.types"
+   "/opt/yunibase/current/chicken5/lib/chicken/11/scheme.base.import.so"
+   "/opt/yunibase/current/chicken5/lib/chicken/11/scheme.case-lambda.o"
+   "/opt/yunibase/current/chicken5/lib/chicken/11/scheme.case-lambda.link"
+   "/opt/yunibase/current/chicken5/lib/chicken/11/scheme.case-lambda.so"
+   "/opt/yunibase/current/chicken5/lib/chicken/11/scheme.case-lambda.types"
+   "/opt/yunibase/current/chicken5/lib/chicken/11/scheme.case-lambda.import.so"
+   "/opt/yunibase/current/chicken5/lib/chicken/11/scheme.char.o"
+   "/opt/yunibase/current/chicken5/lib/chicken/11/scheme.char.link"
+   "/opt/yunibase/current/chicken5/lib/chicken/11/scheme.char.so"
+   "/opt/yunibase/current/chicken5/lib/chicken/11/scheme.char.types"
+   "/opt/yunibase/current/chicken5/lib/chicken/11/scheme.char.import.so"
+   "/opt/yunibase/current/chicken5/lib/chicken/11/scheme.complex.o"
+   "/opt/yunibase/current/chicken5/lib/chicken/11/scheme.complex.link"
+   "/opt/yunibase/current/chicken5/lib/chicken/11/scheme.complex.so"
+   "/opt/yunibase/current/chicken5/lib/chicken/11/scheme.complex.types"
+   "/opt/yunibase/current/chicken5/lib/chicken/11/scheme.complex.import.so"
+   "/opt/yunibase/current/chicken5/lib/chicken/11/scheme.cxr.o"
+   "/opt/yunibase/current/chicken5/lib/chicken/11/scheme.cxr.link"
+   "/opt/yunibase/current/chicken5/lib/chicken/11/scheme.cxr.so"
+   "/opt/yunibase/current/chicken5/lib/chicken/11/scheme.cxr.types"
+   "/opt/yunibase/current/chicken5/lib/chicken/11/scheme.cxr.import.so"
+   "/opt/yunibase/current/chicken5/lib/chicken/11/scheme.eval.o"
+   "/opt/yunibase/current/chicken5/lib/chicken/11/scheme.eval.link"
+   "/opt/yunibase/current/chicken5/lib/chicken/11/scheme.eval.so"
+   "/opt/yunibase/current/chicken5/lib/chicken/11/scheme.eval.types"
+   "/opt/yunibase/current/chicken5/lib/chicken/11/scheme.eval.import.so"
+   "/opt/yunibase/current/chicken5/lib/chicken/11/scheme.file.o"
+   "/opt/yunibase/current/chicken5/lib/chicken/11/scheme.file.link"
+   "/opt/yunibase/current/chicken5/lib/chicken/11/scheme.file.so"
+   "/opt/yunibase/current/chicken5/lib/chicken/11/scheme.file.types"
+   "/opt/yunibase/current/chicken5/lib/chicken/11/scheme.file.import.so"
+   "/opt/yunibase/current/chicken5/lib/chicken/11/scheme.inexact.o"
+   "/opt/yunibase/current/chicken5/lib/chicken/11/scheme.inexact.link"
+   "/opt/yunibase/current/chicken5/lib/chicken/11/scheme.inexact.so"
+   "/opt/yunibase/current/chicken5/lib/chicken/11/scheme.inexact.types"
+   "/opt/yunibase/current/chicken5/lib/chicken/11/scheme.inexact.import.so"
+   "/opt/yunibase/current/chicken5/lib/chicken/11/scheme.lazy.o"
+   "/opt/yunibase/current/chicken5/lib/chicken/11/scheme.lazy.link"
+   "/opt/yunibase/current/chicken5/lib/chicken/11/scheme.lazy.so"
+   "/opt/yunibase/current/chicken5/lib/chicken/11/scheme.lazy.types"
+   "/opt/yunibase/current/chicken5/lib/chicken/11/scheme.lazy.import.so"
+   "/opt/yunibase/current/chicken5/lib/chicken/11/scheme.load.o"
+   "/opt/yunibase/current/chicken5/lib/chicken/11/scheme.load.link"
+   "/opt/yunibase/current/chicken5/lib/chicken/11/scheme.load.so"
+   "/opt/yunibase/current/chicken5/lib/chicken/11/scheme.load.types"
+   "/opt/yunibase/current/chicken5/lib/chicken/11/scheme.load.import.so"
+   "/opt/yunibase/current/chicken5/lib/chicken/11/scheme.process-context.o"
+   "/opt/yunibase/current/chicken5/lib/chicken/11/scheme.process-context.link"
+   "/opt/yunibase/current/chicken5/lib/chicken/11/scheme.process-context.so"
+   "/opt/yunibase/current/chicken5/lib/chicken/11/scheme.process-context.types"
+   "/opt/yunibase/current/chicken5/lib/chicken/11/scheme.process-context.import.so"
+   "/opt/yunibase/current/chicken5/lib/chicken/11/scheme.r5rs.o"
+   "/opt/yunibase/current/chicken5/lib/chicken/11/scheme.r5rs.link"
+   "/opt/yunibase/current/chicken5/lib/chicken/11/scheme.r5rs.so"
+   "/opt/yunibase/current/chicken5/lib/chicken/11/scheme.r5rs.types"
+   "/opt/yunibase/current/chicken5/lib/chicken/11/scheme.r5rs.import.so"
+   "/opt/yunibase/current/chicken5/lib/chicken/11/scheme.read.o"
+   "/opt/yunibase/current/chicken5/lib/chicken/11/scheme.read.link"
+   "/opt/yunibase/current/chicken5/lib/chicken/11/scheme.read.so"
+   "/opt/yunibase/current/chicken5/lib/chicken/11/scheme.read.types"
+   "/opt/yunibase/current/chicken5/lib/chicken/11/scheme.read.import.so"
+   "/opt/yunibase/current/chicken5/lib/chicken/11/scheme.repl.o"
+   "/opt/yunibase/current/chicken5/lib/chicken/11/scheme.repl.link"
+   "/opt/yunibase/current/chicken5/lib/chicken/11/scheme.repl.so"
+   "/opt/yunibase/current/chicken5/lib/chicken/11/scheme.repl.types"
+   "/opt/yunibase/current/chicken5/lib/chicken/11/scheme.repl.import.so"
+   "/opt/yunibase/current/chicken5/lib/chicken/11/scheme.time.o"
+   "/opt/yunibase/current/chicken5/lib/chicken/11/scheme.time.link"
+   "/opt/yunibase/current/chicken5/lib/chicken/11/scheme.time.so"
+   "/opt/yunibase/current/chicken5/lib/chicken/11/scheme.time.types"
+   "/opt/yunibase/current/chicken5/lib/chicken/11/scheme.time.import.so"
+   "/opt/yunibase/current/chicken5/lib/chicken/11/scheme.write.o"
+   "/opt/yunibase/current/chicken5/lib/chicken/11/scheme.write.link"
+   "/opt/yunibase/current/chicken5/lib/chicken/11/scheme.write.so"
+   "/opt/yunibase/current/chicken5/lib/chicken/11/scheme.write.types"
+   "/opt/yunibase/current/chicken5/lib/chicken/11/scheme.write.import.so")
+ (synopsis "R7RS compatibility")
+ (author "The Chicken Team")
+ (category lang-exts)
+ (license "BSD")
+ (dependencies matchable srfi-1 srfi-13)
+ (test-dependencies test)
+ (components
+   (extension
+     r7rs
+     (component-dependencies
+       r7rs-compile-time
+       scheme.base
+       scheme.case-lambda
+       scheme.char
+       scheme.complex
+       scheme.cxr
+       scheme.eval
+       scheme.file
+       scheme.inexact
+       scheme.lazy
+       scheme.load
+       scheme.process-context
+       scheme.r5rs
+       scheme.read
+       scheme.repl
+       scheme.time
+       scheme.write)
+     (source-dependencies "synrules.scm" "scheme.base-interface.scm"))
+   (extension r7rs-support)
+   (extension r7rs-library)
+   (extension
+     r7rs-compile-time
+     (source "r7rs-compile-time-module.scm")
+     (source-dependencies "r7rs-compile-time.scm")
+     (component-dependencies r7rs-library r7rs-support))
+   (extension
+     scheme.base
+     (types-file)
+     (source-dependencies "scheme.base-interface.scm")
+     (component-dependencies r7rs-support r7rs-compile-time))
+   (extension scheme.case-lambda (types-file))
+   (extension scheme.char (types-file) (component-dependencies r7rs-support))
+   (extension scheme.complex (types-file))
+   (extension scheme.cxr (types-file))
+   (extension scheme.eval (types-file) (component-dependencies r7rs-library))
+   (extension scheme.file (types-file))
+   (extension scheme.inexact (types-file))
+   (extension scheme.lazy (types-file))
+   (extension scheme.load (types-file))
+   (extension scheme.process-context (types-file))
+   (extension scheme.r5rs (types-file) (component-dependencies scheme.eval))
+   (extension scheme.read (types-file))
+   (extension scheme.repl (types-file))
+   (extension scheme.time (types-file))
+   (extension scheme.write (types-file))))

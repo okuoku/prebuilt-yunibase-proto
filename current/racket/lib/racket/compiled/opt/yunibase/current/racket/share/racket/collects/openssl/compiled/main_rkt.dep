@@ -1,0 +1,1 @@
+("8.8.0.10" ta6le ("df02e92a7ce0a205026adf4b4d9c526107bdf84c" . "1c46b04787b9e02978bb29d96f0213303e5cb97d") (collects #"openssl" #"mzssl.rkt") (collects #"racket" #"base.rkt") (collects #"racket" #"runtime-config.rkt"))

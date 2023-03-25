@@ -1,0 +1,1610 @@
+;;;;
+;;;; r7rs.stk   -- R7RS support (Draft-3)
+;;;;
+;;;; Copyright © 2011-2023 Erick Gallesio <eg@stklos.net>
+;;;;
+;;;;
+;;;; This program is free software; you can redistribute it and/or modify
+;;;; it under the terms of the GNU General Public License as published by
+;;;; the Free Software Foundation; either version 2 of the License, or
+;;;; (at your option) any later version.
+;;;;
+;;;; This program is distributed in the hope that it will be useful,
+;;;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;;;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;;;; GNU General Public License for more details.
+;;;;
+;;;; You should have received a copy of the GNU General Public License
+;;;; along with this program; if not, write to the Free Software
+;;;; Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
+;;;; USA.
+;;;;
+;;;;           Author: Erick Gallesio [eg@unice.fr]
+;;;;    Creation date: 17-Apr-2011 19:36 (eg)
+;;;;
+
+
+(export write-shared write-simple
+        letrec* let-values let*-values
+        delay delay-force lazy make-promise eager
+        define-values
+        equal-simple?
+        exact-integer?
+        floor-quotient floor/ truncate/ truncate-quotient
+        truncate-remainder floor-remainder
+        square exact-integer-sqrt exact inexact
+        boolean=?
+        make-list member-simple assoc-simple member assoc
+        symbol=?
+        string=?     %string2=?
+        string<?     %string2<?
+        string<=?    %string2<=?
+        string>?     %string2>?
+        string>=?    %string2>=?
+        string-ci=?  %string-ci2=?
+        string-ci<?  %string-ci2<?
+        string-ci<=? %string-ci2<=?
+        string-ci>?  %string-ci2>?
+        string-ci>=? %string-ci2>=?
+        string->list string-copy!
+        string-fill! %string-fill2!
+        vector->list vector-copy! vector->string string->vector
+        make-bytevector bytevector? bytevector bytevector-length
+        bytevector-u8-ref bytevector-u8-set! bytevector-copy!
+        string-map vector-map
+        string-for-each vector-for-each
+        error-object? error-object-message error-object-irritants
+        read-error? file-error?
+        call-with-port input-port-open? output-port-open?
+        read-string read-u8 peek-u8 read-bytevector!
+        write-string write-u8 write-bytevector
+        with-exception-handler raise-continuable guard
+        current-jiffy jiffies-per-second features
+        %continuable-exception?  %continuable-exception-value;; FIXME
+        )
+
+
+;;;; Aliases
+(define write-shared write*)
+(define write-simple write)
+
+
+;;;; ----------------------------------------------------------------------
+;;;; 4.2 Derived expression types
+;;;; ----------------------------------------------------------------------
+
+#|
+<doc r7rs-syntax letrec*
+ * (letrec* <bindings> <body>)
+ *
+ * <bindings> should have the form as in |let| and body is a sequence
+ * of zero or more definitions followed by one or more expressions.
+
+ * The `|<variable>|`s are bound to fresh locations, each |variable| is
+ * assigned in left-to-right order to the result of evaluating the
+ * corresponding |init|, the |body| is evaluated in the resulting
+ * environment, and the values of the last expression in |body| are
+ * returned. Despite the left-to-right evaluation and assignment order,
+ * each binding of a |variable| has the entire |letrec*| expression as its
+ * region, making it possible to define mutually recursive procedures.
+ * If it is not possible to evaluate each |init| without assigning or
+ * referring to the value of the corresponding |variable| or the
+ * |variable| of any of the bindings that follow it in |bindings|, it is
+ * an error.
+ *
+ * @lisp
+ * (letrec* ((p (lambda (x)
+ *                (+ 1 (q (- x 1)))))
+ *           (q(lambda (y)
+ *               (if (zero? y)
+ *                   0
+ *                   (+ 1 (p (- y 1))))))
+ *           (x (p 5))
+ *           (y x))
+ *   y)  => 5
+ * @end lisp
+doc>
+|#
+(define-macro (letrec* bindings . body)
+  (if (list? bindings)
+      (for-each (lambda (x)
+                  (unless (and (list? x) (= (length x) 2))
+                    (error 'letrec* "incorrect binding ~S" x)))
+                bindings)
+      (error 'letrec* "incorrect bindings ~S" bindings))
+  `(let ,(map (lambda (x) (list (car x) #f)) bindings)
+     ,@(map (lambda (x) `(set! ,@x))  bindings)
+     (let () ,@body)))
+
+#|
+<doc r7rs-syntax let-values
+ * (let-values ((<formals> <expression>) ...) <body>)
+ *
+ * Each |<formals>| should be a formal arguments list as for a |lambda| expression.
+ *
+ * The `|<expression>|`s are evaluated in the current environment,
+ * the variables of the |<formals>| are bound to fresh locations, the return
+ * values of the `|<expression>|`s are stored in the variables, the |<body>| is
+ * evaluated in the extended environment, and the values of the last expression
+ * of |<body>| are returned.
+ *
+ * The matching of each |<formals>| to values is as for the matching of
+ * |<formals>| to arguments in a |lambda| expression, and it is an error
+ * for an |<expression>| to return a number of values that does not match
+ * its corresponding |<formals>|.
+ * @lisp
+ * (let-values (((root rem) (exact-integer-sqrt 32)))
+ *    (* root rem))            =>  35
+ *
+ * (let ((a 'a) (b 'b) (x 'x) (y 'y))
+ *    (let-values (((a b) (values x y))
+ *                 ((x y) (values a b)))
+ *      (list a b x y)))      => (x y a b)
+ * @end lisp
+doc>
+|#
+
+#|
+macro-expansion of
+   (let-values ( [(a b) (values 1 2)]
+                 [(c d) (values 3 4)] )
+      (list a b c d))
+is
+    (call-with-values
+        (lambda () (values 1 2))
+      (lambda (|G161| |G162|)
+        (call-with-values
+            (lambda () (values 3 4))
+          (lambda (|G163| |G164|)
+            (let ((d |G164|)
+                  (c |G163|)
+                  (b |G162|)
+                  (a |G161|))
+              (list a b c d))))))
+|#
+(define-macro (let-values bindings . body)
+  (let ((tmps '()))  ;; A-list of temporaries.
+
+    (define (expand-once bindings tmps)
+      (let ((first (car bindings)))
+        `(call-with-values
+             (lambda () ,(cadr first))
+           (lambda ,(map* (lambda (x) (cadr (assoc x tmps))) (car first))
+             ,(if (= (length bindings) 1)
+                  `(let ,tmps ,@body)
+                  (expand-once (cdr bindings) tmps))))))
+
+    (define (parse-binding binding)
+      ;; Verify that the binding seem correct
+      (unless (and (list? binding)
+                   (= (length binding) 2)
+                   (or (pair? (car binding))
+                       (symbol? (car binding))))
+        (error 'let-values "incorrect binding ~S" binding))
+      ;; Verify that the defined variables are unique
+      (for-each* (lambda (x)
+                   (if (assoc x tmps)
+                       (error 'let-values "duplicate binding ~s" x)
+                       (set! tmps (cons (list x (gensym)) tmps))))
+                 (car binding)))
+
+    ;; Body of let-values
+    (for-each parse-binding bindings)
+    (if (null? tmps)
+        `(let () ,@body)
+        (expand-once bindings tmps))))
+
+#|
+<doc r7rs-syntax let*-values
+ * (let-values ((<formals> <expression>) ...) <body>)
+ *
+ * Each |<formals>| should be a formal arguments list as for a |lambda| expression.
+ *
+ * |let*-values| is similar to |let-values|, but the bindings are performed
+ * sequentially from left to right, and the region of a binding indicated by
+ * |(<formals> <expression>)| is that part of the |let*-values| expression to
+ * the right of the binding. Thus the second binding is done in an environment
+ * in which the first binding is visible, and so on.
+ * @lisp
+ * (let ((a 'a) (b 'b) (x 'x) (y 'y))
+ *    (let*-values (((a b) (values x y))
+ *                 ((x y) (values a b)))
+ *      (list a b x y)))      => (x y x y)
+ * @end lisp
+doc>
+|#
+(define-macro (let*-values bindings . body)
+  (if (> (length bindings) 1)
+      `(let-values (,(car bindings))
+         (let*-values ,(cdr bindings) ,@body))
+      `(let-values ,bindings ,@body)))
+
+
+;;;
+;;; Delayed devaluation
+;;;
+
+#|
+<doc syntax delay
+ * (delay <expression>)
+ *
+ * The |delay| construct is used together with the procedure |force|
+ * to implement *_lazy evaluation_* or *_call by need_*. |(delay
+ * <expression>)| returns an object called a *_promise_*) which at some
+ * point in the future may be asked (by the |force| procedure) to
+ * evaluate |<expression>|, and deliver the resulting value.
+ * The effect of |<expression>| returning multiple values is unpredictable.
+ *
+ * See the description of |force| for a more complete
+ * description of |delay|.
+doc>
+|#
+(define-macro (delay exp)
+  `(delay-force (%make-promise (list ,exp))))
+
+#|
+<doc r7rs-syntax lazy delay-force
+ * (delay-force <expression>)
+ * (lazy <expression>)
+ *
+ * The expression |(delay-force expression)| is conceptually similar
+ * to |(delay (force expression))|, with the difference that forcing the result
+ * of |delay-force| will in effect result in a tail call to |(force expression)|,
+ * while forcing the result of |(delay (force expression))| might not. Thus
+ * iterative lazy algorithms that might result in a long series of chains of
+ * |delay| and |force| can be rewritten using |delay-force| to prevent consuming
+ * unbounded space during evaluation.
+ *
+ * The special form |delay-force| appears with name |lazy| in {{link-srfi 45}}.
+ *
+doc>
+|#
+(define-macro (delay-force exp)
+  `(%make-promise (lambda () ,exp)))
+
+(define-macro (lazy expr)      ;; the SRFI-45 sytax
+  `(delay-force ,expr))
+
+#|
+<doc r7rs eager make-promise
+ * (make-promise obj)
+ * (eager obj)
+ *
+ * The |make-promise| procedure returns a promise which,
+ * when forced, will return |obj| . It is similar to |delay|, but
+ * does not delay its argument: it is a procedure rather than
+ * syntax. If |obj| is already a promise, it is returned.
+ *
+ * The primitve |make-promise| appears with name |eager| in
+ * SRFI-45.
+doc>
+|#
+(define (make-promise expr)
+  (if (promise? expr)
+      expr
+      (delay expr)))
+
+(define eager make-promise)
+
+;;;; ----------------------------------------------------------------------
+;;;; 5.3 Variable definitions
+;;;; ----------------------------------------------------------------------
+
+#|
+<doc R7RS define-values
+ * (define-values formals expression)
+ *
+ * The form |define-values| creates multiple definitions from a single expression
+ * returning multiple values. Here, |expression| is evaluated, and the |formals|
+ * are bound to the return values in the same way that the |formals| in a
+ * lambda expression are matched to the arguments in a procedure call.
+ *
+ * @lisp
+ * (let ()
+ *   (define-values (x y) (exact-integer-sqrt 17))
+ *   (list x y))                   => (4 1)
+ *
+ * (let ()
+ *    (define-values (x y) (values 1 2))
+ *    (+ x y))                     => 3
+ *
+ * (let ()
+ *    (define-values (x . y) (values 1 2 3))
+ *    (list x y)                  => (1 (2 3))
+ * @end lisp
+doc>
+|#
+(define-macro (define-values formals expr)
+  (define (flat lst)
+    (cond
+     ((null? lst) lst)
+     ((pair? lst) (cons (car lst) (flat (cdr lst))))
+     (else        (list lst))))
+
+  (if (null? formals)
+      `(call-with-values (lambda () ,expr) void)
+      (let* ((tmps (map* (lambda(x) (gensym)) formals))
+             (ff   (flat formals))
+             (ft   (flat tmps)))
+        `(begin
+           ,@(map (lambda (x) `(define ,x #void)) ff)
+           (call-with-values (lambda () ,expr)
+             (lambda ,tmps ,@(map (lambda (x y) `(set! ,x ,y)) ff ft)))
+           ;; return a (values (void) ...) for the REPL
+           (values (void) ',formals)))))
+
+;;;; ----------------------------------------------------------------------
+;;;; 6.1 Equivalence predicate
+;;;; ----------------------------------------------------------------------
+(define equal-simple? equal?)
+(set! equal? %equiv?)   ;; equiv? is defined in equiv.stk
+
+
+;;;; ----------------------------------------------------------------------
+;;;; 6.2 Numbers
+;;;; ----------------------------------------------------------------------
+
+#|
+<doc R7RS exact-integer?
+ * (exact->integer? z)
+ *
+ * Returns  `#t` if z is both exact and an integer; otherwise returns `#f`.
+ *
+ * @lisp
+ * (exact-integer? 32)   => #t
+ * (exact-integer? 32.0) => #f
+ * (exact-integer? 32/5) => #f
+ * @end lisp
+doc>
+|#
+
+(define (exact-integer? n) (and (exact? n) (integer? n)))
+
+
+#|
+<doc R7RS floor/ floor-quotient floor-remainder truncate/ truncate-quotient truncate-remainder
+ * (floor/ n1 n2)
+ * (floor-quotient n1 n2)
+ * (floor-remainder n1 n2)
+ * (truncate/ n1 n2)
+ * (truncate-quotient n1 n2)
+ * (truncate-remainder n1 n2)
+ *
+ * These procedures implement number-theoretic (integer) division.  It is
+ * an error if |n2| is zero. The procedures ending in '/' return two integers;
+ * the other procedures return an integer.  All the procedures compute a
+ * quotient |q| and remainder |r| such that |n1=n2*q+r|.
+ *
+ * See R7RS for more information.
+ *
+ * @lisp
+ * (floor/ 5 2)         => 2 1
+ * (floor/ -5 2)        => -3 1
+ * (floor/ 5 -2)        => -3 -1
+ * (floor/ -5 -2)       => 2 -1
+ * (truncate/ 5 2)      => 2 1
+ * (truncate/ -5 2)     => -2 -1
+ * (truncate/ 5 -2)     => -2 1
+ * (truncate/ -5 -2)    => 2 -1
+ * (truncate/ -5.0 -2)  => 2.0 -1.0%
+ * @end lisp
+doc>
+|#
+(define (floor-quotient n m)
+  (let ((res (floor (/ n m))))
+    (if (and (exact? n) (exact? m))
+        (inexact->exact res)
+        res)))
+
+(define (floor/ n m)
+  (values (floor-quotient n m)
+          (floor-remainder n m)))
+
+(define (truncate/ n m)
+  (values (quotient n m)
+          (remainder n m)))
+
+(define truncate-quotient  quotient)
+(define truncate-remainder remainder)
+(define floor-remainder    modulo)
+
+#|
+<doc R7RS square
+ * (square z)
+ *
+ * Returns the square of |z|. This is equivalent to |(* z z)|.
+ *
+ * @lisp
+ * (square 42)     => 1764
+ * (square 2.0)    => 4.0
+ * @end lisp
+doc>
+|#
+(define (square z) (* z z))
+
+#|
+<doc R7RS exact-integer-sqrt
+ * (exact-integer-sqrt k)
+ *
+ * Returns two non negatives integers |s| and |r| where
+ * |k=s**2+r| and |k<(s+1)**2|.
+ *
+ * @lisp
+ * (exact-integer-sqrt 4)     => 2 0
+ * (exact-integer-sqrt 5)     => 2 1
+ * @end lisp
+doc>
+|#
+(define (exact-integer-sqrt k)
+  (define (isqrt n)
+    ;; Compute integer square root using Newton's method.
+
+    ;; We take special care when picking the initial guess, which
+    ;; is computed in the 'xn' argument to the named let below:
+    ;; this is a very good estimate (much better than the usual
+    ;; textbook "n/2" guess), and safe:
+    ;;
+    ;; (expt 2 (+ 1 (quotient (integer-length n) 2)))
+    ;;
+    ;; which is the least power of two bigger than SQRT(n).
+    (let loop ((xn (expt 2 (+ 1 (quotient (integer-length n) 2)))))
+      (let ((xn1 (quotient (+ xn (quotient n xn)) 2)))
+        (if (>= xn1 xn)
+            xn
+            (loop xn1)))))
+
+  (unless (and (exact-integer? k)(>= k 0))
+    (error "non negative integer expected. It was: ~S" k))
+  (let ((s (if (fixnum? k)
+               (let ((v (sqrt k)))
+                 (if (exact? v) v (inexact->exact (floor v))))
+               (isqrt k))))
+    (values s (- k (* s s)))))
+
+
+#|
+<doc R7RS exact inexact
+ * (inexact z)
+ * (exact z)
+ *
+ * These R7RS procedures correspond to the R5RS |exact->inexact|
+ * and |inexact->exact| procedure respectively
+doc>
+|#
+(define inexact exact->inexact)
+(define exact  inexact->exact)
+
+
+;;;; ----------------------------------------------------------------------
+;;;; 6.3 Booleans
+;;;; ----------------------------------------------------------------------
+
+#|
+<doc boolean=?
+ * (boolean=? boolean1 boolean2  ...)
+ *
+ * Returns `#t` if all the arguments are booleans and all are `#t` or all are `#f`.
+ *
+doc>
+|#
+(define (boolean=? e1 . rest)
+  (letrec ((verify (lambda (val lst)
+                  (or (null? lst)
+                     (and (boolean? (car lst))
+                        (eq? (car lst) val)
+                        (verify val (cdr lst)))))))
+    (verify e1 rest)))
+
+;;;; ----------------------------------------------------------------------
+;;;; 6.4 Pairs and lists
+;;;; ----------------------------------------------------------------------
+
+#|
+<doc R7RS make-list
+ * (make-list k)
+ * (make-list k fill)
+ *
+ * Returns a newly allocated list of k elements. If a second
+ * argument is given, then each element is initialized to fill .
+ * Otherwise the initial contents of each element is unspecified.
+doc>
+|#
+(define (make-list k :optional (fill (void)))
+  (vector->list (make-vector k fill)))
+
+;;
+;; Define versions of member and assoc which use equiv? instead of equal?
+;;
+(define member-simple member)
+(define assoc-simple  assoc)
+
+(define (member x y :optional (compar %equiv?)) (member-simple x y compar))
+(define (assoc  x y :optional (compar %equiv?)) (assoc-simple  x y compar))
+
+
+;;;; ----------------------------------------------------------------------
+;;;; 6.5 Symbols
+;;;; ----------------------------------------------------------------------
+#|
+<doc symbol=?
+ * (symbol=? symbol1 symbol2  ...)
+ *
+ * Returns `#t` if all the arguments are symbols and all have the same name in
+ * the sense of |string=?|.
+doc>
+|#
+(define (symbol=? e1 . rest)
+  (letrec ((verify (lambda (val lst)
+                  (or (null? lst)
+                     (and (symbol? (car lst))
+                        (eq? (car lst) val)
+                        (verify val (cdr lst)))))))
+    (verify e1 rest)))
+
+
+;;;; ----------------------------------------------------------------------
+;;;; 6.6 Characters
+;;;; ----------------------------------------------------------------------
+
+;; Nothing here
+
+
+;;;; ----------------------------------------------------------------------
+;;;; 6.7 Strings
+;;;; ----------------------------------------------------------------------
+
+;;
+;; Generalized string comparison functions
+;;
+(define-macro (%generalize-string-compare func func2)
+  `(begin
+     ;; Keep the old function since it is twice faster than the general one
+     (define ,func2 ,func)
+     ;; define the generalized function
+     (set! ,func (lambda (first . l)
+                   ;; Set the name of the function for better error messages
+                   ,(string->keyword (symbol->string func))
+                   ;; Fuction body
+                   (letrec ((compare (lambda (first . l)
+                                       (or (null? l)
+                                          (and (,func2 first (car l))
+                                             (apply compare l))))))
+                     (unless (string? first) (error "bad string ~W" first))
+                     (apply compare first l))))))
+
+
+(%generalize-string-compare string=?     %string2=?)
+(%generalize-string-compare string<?     %string2<?)
+(%generalize-string-compare string<=?    %string2<=?)
+(%generalize-string-compare string>?     %string2>?)
+(%generalize-string-compare string>=?    %string2>=?)
+
+(%generalize-string-compare string-ci=?  %string-ci2=?)
+(%generalize-string-compare string-ci<?  %string-ci2<?)
+(%generalize-string-compare string-ci<=? %string-ci2<=?)
+(%generalize-string-compare string-ci>?  %string-ci2>?)
+(%generalize-string-compare string-ci>=? %string-ci2>=?)
+
+;;
+;; Generalized string->list
+;;
+(let ((s->l string->list)) ;; s->l is the R5RS function
+  (set! string->list
+        (lambda (str :optional (start 0 start?) (end 0 end?))
+          #:string->list  ;; set procedure name
+          (if start?
+              (let ((end (if end? end (string-length str))))
+                (%claim-error 'string->list
+                              (s->l (substring str start end))))
+              (s->l str)))))
+
+
+
+#|
+<doc R7RS string-copy!
+ * (string-copy! to at from)
+ * (string-copy! to at from start)
+ * (string-copy! to at from start end)
+ *
+ * Copies the characters of |string| from between |start| and |end|
+ * to string |to|, starting at |at|. The order in which characters are copied
+ * is unspecified, except that if the source and destination overlap,
+ * copying takes place as if the source is first copied into a temporary
+ * string and then into the destination. This can be achieved without
+ * allocating storage by making sure to copy in the correct direction in
+ * such circumstances.
+ *
+ * It is an error if |at| is less than zero or greater than the length
+ * of |to|. It is also an error if |(- (string-length to) at)| is less
+ * than |(- end start)|.
+doc>
+|#
+(define (string-copy! to at from :optional (start 0 start?) (end 0 end?))
+  (define (err . l)
+    (apply error 'string-copy! l))
+
+  (define (%string-copy! to tstart from fstart fend)
+    (if (> fstart tstart)
+        (do ((i fstart (+ i 1))
+             (j tstart (+ j 1)))
+            ((>= i fend))
+          (string-set! to j (string-ref from i)))
+
+        (do ((i (- fend 1)                    (- i 1))
+             (j (+ -1 tstart (- fend fstart)) (- j 1)))
+            ((< i fstart))
+          (string-set! to j (string-ref from i)))))
+
+  ;; body starts here
+  (unless (string? to)   (err "bad string ~S" to))
+  (unless (string? from) (err "bad string ~S" from))
+  (let ((length-from (string-length from))
+        (length-to   (string-length to)))
+    (unless (and (integer? at) (>= at 0) (< at length-to))
+      (err "bad destination index ~S" at))
+    (when start?
+      (unless (and (integer? start) (>= start 0) (<= start length-from))
+        (err "bad integer for start index ~S" start)))
+    (if end?
+        (unless (and (integer? end) (>= end 0) (<= end length-from))
+          (err "bad integer for end index ~S" end))
+        (set! end (string-length from)))
+    (when (< (- length-to at) (- end start))
+      (err "not enough room in destination string ~S" to))
+
+    ;; do the copy
+    (%claim-error 'string-copy!
+                  (%string-copy! to at from start end))))
+
+;;
+;; R7RS string-fill!
+;;
+
+; Keep the R5RS version available
+(define %string-fill2! string-fill!)
+;; Implement the one with 2 to 4 parameters
+(let ((fill (lambda (str char :optional (start 0 start?) (end 0 end?))
+              #:string-fill! 
+              (%claim-error
+                 'string-fill!
+                 (if start?
+                     ;; R7RS string-fill!
+                     (begin
+                       (unless end?
+                         (set! end (string-length str)))
+                       (let Loop ((i start))
+                         (when (< i end)
+                           (string-set! str i char)
+                           (Loop (+ i 1)))))
+                     ;; R5RS string-fill!
+                     (%string-fill2! str char))))))
+  (set! string-fill! fill))
+
+
+
+;;;; ----------------------------------------------------------------------
+;;;; 6.8 Vectors
+;;;; ----------------------------------------------------------------------
+
+;;
+;; Generalized vector->list
+;;
+(let ((v->l vector->list)) ;; v->l is the R5RS function
+  (set! vector->list
+        (lambda (v :optional (start 0 start?) (end 0 end?))
+          #:vector->list  ; set procedure name
+          (if start?
+              (let ((end (if end? end (vector-length v))))
+                (%claim-error
+                 'vector->list
+                 (do ((i (- end 1) (- i 1))
+                      (result '() (cons (vector-ref v i) result)))
+                     ((< i start) result))))
+              ;; R5RS function (without start or end)
+              (v->l v)))))
+
+
+
+#|
+<doc R7RS vector-copy!
+ * (vector-copy! to at from)
+ * (vector-copy! to at from start)
+ * (vector-copy! to at from start end)
+ *
+doc>
+|#
+(define (vector-copy! to at from :optional (start 0 start?) (end 0 end?))
+  (define (err . l)
+    (apply error 'vector-copy! l))
+
+  (define (%vector-copy! to tstart from fstart fend)
+    (if (> fstart tstart)
+        (do ((i fstart (+ i 1))
+             (j tstart (+ j 1)))
+            ((>= i fend))
+          (vector-set! to j (vector-ref from i)))
+
+        (do ((i (- fend 1)                    (- i 1))
+             (j (+ -1 tstart (- fend fstart)) (- j 1)))
+            ((< i fstart))
+          (vector-set! to j (vector-ref from i)))))
+
+  ;; body starts here
+  (unless (vector? to)   (err "bad vector ~S" to))
+  (unless (vector? from) (err "bad vector ~S" from))
+  (let ((length-from (vector-length from))
+        (length-to   (vector-length to)))
+    (unless (and (integer? at) (>= at 0) (< at length-to))
+      (err "bad destination index ~S" at))
+    (when start?
+      (unless (and (integer? start) (>= start 0) (<= start length-from))
+        (err "bad integer for start index ~S" start)))
+    (if end?
+        (unless (and (integer? end) (>= end 0) (<= end length-from))
+          (err "bad integer for end index ~S" end))
+        (set! end (vector-length from)))
+    (when (< (- length-to at) (- end start))
+      (err "not enough room in destination vector ~S" to))
+
+    ;; do the copy
+    (%claim-error 'vector-copy!
+                  (%vector-copy! to at from start end))))
+
+
+
+#|
+<doc R7RS vector->string string->vector
+ * (vector->string string)
+ * (vector->string string start)
+ * (vector->string string start end)
+ * (string->vector vector)
+ * (string->vector vector start)
+ * (string->vector vector start end)
+ *
+ * The |vector->string| procedure returns a newly allocated
+ * string of the objects contained in the elements of |vector|
+ * between |start| and |end|. It is an error if any element of |vector|
+ * between |start| and |end| is not a character.
+ *
+ * The |string->vector| procedure returns a newly created vector
+ * initialized to the elements of |string| between |start| and |end|.
+ *
+ * In both procedures, order is preserved.
+ *
+ * @lisp
+ * (string->vector "ABC")           => #(#\A #\B #\C)
+ * (vector->string #(#\1 #\2 #\3))  => "123"
+ * @end lisp
+doc>
+|#
+(define (vector->string vect :optional (start 0) (end 0 end?))
+  (unless (vector? vect)    (error "bad vector ~S" vect))
+  (unless end?              (set! end (vector-length vect)))
+  (%claim-error
+     'vector->string
+     (let loop ((res   (make-string (- end start)))
+                (i     0)
+                (start start))
+       (if (< start end)
+           (let ((c (vector-ref vect start)))
+             (unless (char? c)
+               (error "element at index ~S of ~S must be a character" start vect))
+             (string-set! res i c)
+             (loop res (+ i 1) (+ start 1)))
+           res))))
+
+(define (string->vector str :optional (start 0) (end 0 end?))
+  (unless (string? str)    (error "bad string ~S" str))
+  (unless end?             (set! end (string-length str)))
+  (%claim-error
+     'string->vector
+     (let loop ((res   (make-vector (- end start)))
+                (i     0)
+                (start start))
+       (if (< start end)
+           (begin
+             (vector-set! res i (string-ref str start))
+             (loop res (+ i 1) (+ start 1)))
+           res))))
+
+;;;; ----------------------------------------------------------------------
+;;;; 6.9 Bytevectors
+;;;; ----------------------------------------------------------------------
+#|
+<doc R7RS make-bytevector
+ * (make-bytevector k)
+ * (make-bytevector k byte)
+ *
+ * Returns a newly allocated bytevector of k bytes. If If |byte| is given,
+ * then all elements of the bytevector are initialized to |byte|, otherwise
+ * the contents of each element is 0.
+ * @lisp
+ * (make-bytevector 2 12) => #u8(12 12)
+ * (make-bytevector 3)    => #u8(0 0 0)
+ * @end lisp
+doc>
+|#
+(define (make-bytevector size :optional (default 0))
+  (%claim-error 'make-bytevector
+                (%make-uvector size default 1)))
+
+#|
+<doc R7RS bytevector?
+ * (bytevector? obj)
+ *
+ * Returns |!t| if |obj| is a bytevector and returns |!f| otherwise.
+doc>
+|#
+(define (bytevector? obj)
+  (%uvector? obj 1))
+
+#|
+<doc R7RS bytevector
+ * (bytevector byte ...)
+ *
+ * Returns a newly allocated bytevector containing its arguments.
+ * @lisp
+ * (bytevector 1 3 5 1 3 5)   => #u8(1 3 5 1 3 5)
+ * (bytevector)               => #u8()
+ * @end lisp
+doc>
+|#
+(define (bytevector . lst)
+  (%claim-error 'bytevector (%uvector lst 1)))
+
+
+#|
+<doc R7RS bytevector-length
+ * (bytevector-length bytevector)
+ *
+ * Returns the length of |bytevector| in bytes as an exact integer.
+doc>
+|#
+(define (bytevector-length bv)
+  (%claim-error 'bytevector-length (%uvector-length bv 1)))
+
+
+#|
+<doc R7RS bytevector-u8-ref
+ * (bytevector-u8-ref bytevector k)
+ *
+ * Returns the byte at index |k| of |bytevector| as an exact integer in the
+ * range [0..255]. It is an error if |k| is not a valid index of |bytevector|.
+ *
+ * @lisp
+ * (bytevector-u8-ref #u8(1 1 2 3 5 8 13 21) 5    => 8
+ * @end lisp
+doc>
+|#
+(define (bytevector-u8-ref bv idx)
+  (%claim-error 'bytevector-u8-ref (%uvector-ref bv idx 1)))
+
+
+#|
+<doc EXT bytevector-u8-set!
+ * (bytevector-u8-ref bytevector k byte)
+ *
+ * Stores byte as the k th byte of bytevector. It is an error if |k|
+ * is not a valid index of |bytevector|.
+ *
+ * @lisp
+ * (let ((bv (bytevector 1 2 3 4)))
+ *   (bytevector-u8-set! bv 1 3)
+ *   bv)                             => #u8(1 3 3 4)
+ * @end lisp
+doc>
+|#
+(define (bytevector-u8-set! bv idx val)
+  (%claim-error 'bytevector-u8-set! (%uvector-set! bv idx val 1)))
+
+
+#|
+<doc R7RS bytevector-copy!
+ * (bytevector-copy! to at from)
+ * (bytevector-copy! to at from start)
+ * (bytevector-copy! to at from start end)
+ *
+ * Copies the bytes of bytevector |from| between |start| and |end|
+ * to bytevector |to|, starting at |at|. The order in which bytes
+ * are copied is unspecified, except that if the source and
+ * destination overlap, copying takes place as if the source is first
+ * copied into a temporary bytevector and then into the destination.
+ * This can be achieved without allocating storage by making sure
+ * to copy in the correct direction in such circumstances.
+ *
+ * It is an error if |at| is less than zero or greater than the length
+ * of |to|. It is also an error if |(- (bytevector-length to) at)| is
+ * less than |(- end start)|.
+ *
+ * @lisp
+ * (define a (bytevector 1 2 3 4 5))
+ * (define b (bytevector 10 20 30 40 50))
+ * (bytevector-copy! b 1 a 0 2)
+ * b                                  =>  #u8(10 1 2 40 50
+ * @end lisp
+doc>
+|#
+(define (bytevector-copy! to at from :optional (start 0 start?) (end 0 end?))
+  (define (err . l)
+    (apply error 'bytevector-copy! l))
+
+  (define (%bytevector-copy! to tstart from fstart fend)
+    (if (> fstart tstart)
+        (do ((i fstart (+ i 1))
+             (j tstart (+ j 1)))
+            ((>= i fend))
+          (bytevector-u8-set! to j (bytevector-u8-ref from i)))
+
+        (do ((i (- fend 1)                    (- i 1))
+             (j (+ -1 tstart (- fend fstart)) (- j 1)))
+            ((< i fstart))
+          (bytevector-u8-set! to j (bytevector-u8-ref from i)))))
+
+  ;; body starts here
+  (unless (bytevector? to)   (err "bad bytevector ~S" to))
+  (unless (bytevector? from) (err "bad bytevector ~S" from))
+  (let ((length-from (bytevector-length from))
+        (length-to   (bytevector-length to)))
+    (unless (and (integer? at) (>= at 0) (< at length-to))
+      (err "bad destination index ~S" at))
+    (when start?
+      (unless (and (integer? start) (>= start 0) (<= start length-from))
+        (err "bad integer for start index ~S" start)))
+    (if end?
+        (unless (and (integer? end) (>= end 0) (<= end length-from))
+          (err "bad integer for end index ~S" end))
+        (set! end (bytevector-length from)))
+    (when (< (- length-to at) (- end start))
+      (err "not enough room in destination bytevector ~S" to))
+
+    ;; do the copy
+    (%claim-error 'bytevector-copy!
+                  (%bytevector-copy! to at from start end))))
+
+;;;; ----------------------------------------------------------------------
+;;;; 6.10 Control features
+;;;; ----------------------------------------------------------------------
+
+#|
+<doc R7RS string-map
+ * (string-map proc string1 string2 ...)
+ *
+ * The |strings| must be strings, and |proc| must be a procedure taking as
+ * many arguments as there are strings and returning a single
+ * value. If more than one string is given and not all strings have the
+ * same length, |string-map| terminates when the shortest list runs
+ * out. |String-map| applies |proc| element-wise to the elements of the
+ * strings and returns a string of the results, in order. The dynamic
+ * order in which proc is applied to the elements of the |strings| is
+ * unspecified.
+ * @lisp
+ * (string-map char-downcase "AbdEgH")
+ *          => "abdegh"
+ *
+ * (string-map
+ *   (lambda (c)
+ *     (integer->char (+ 1 (char->integer c))))
+ *   "HAL")
+ *          => "IBM"
+ *
+ * (string-map (lambda (c k)
+ *            (if (eqv? k #\u)
+ *                (char-upcase c)
+ *                (char-downcase c)))
+ *          "studlycaps"
+ *          "ululululul")
+ *       => "StUdLyCaPs"
+ * @end lisp
+
+doc>
+|#
+(define (string-map proc . strings)
+  (let* ((strs (map (lambda (x)
+                      (unless (string? x)
+                        (error 'string-map "bad string ~S" x))
+                      (string->list x))
+                    strings))
+         (res (apply map proc strs)))
+    ;; Verify that every compnent of the result is a character
+    (unless (every char? res)
+      (error 'string-map "bad character in ~S" res))
+    ;; Return result
+    (list->string res)))
+
+#|
+<doc R7RS vector-map
+ * (vector-map proc vector1 vector2 ...)
+ *
+ * The |vectors| must be vectors, and |proc| must be a procedure
+ * taking as many arguments as there are vectors and returning a single
+ * value. If more than one vector is given and not all vectors have the
+ * same length, |vector-map| terminates when the shortest list runs
+ * out. |Vector-map| applies |proc| element-wise to the elements of the
+ * vectors and returns a vector of the results, in order. The dynamic
+ * order in which proc is applied to the elements of the |vectors| is
+ * unspecified.
+ * @lisp
+ * (vector-map cadr '#((a b) (d e) (g h)))
+ *     =>  #(b e h)
+ *
+ * (vector-map (lambda (n) (expt n n))
+ *          '#(1 2 3 4 5))
+ *     => #(1 4 27 256 3125)
+ *
+ * (vector-map + '#(1 2 3) '#(4 5 6))
+ *     => #(5 7 9)
+ *
+ * (let ((count 0))
+ *   (vector-map
+ *     (lambda (ignored)
+ *       (set! count (+ count 1))
+ *       count)
+ *     '#(a b)))
+ *     => #(1 2) or #(2 1)
+ * @end lisp
+doc>
+|#
+(define (vector-map proc . vectors)
+  (unless (every vector? vectors)
+    (error 'vector-map "bad list of vectors ~S" vectors))
+  (list->vector (apply map proc (map vector->list vectors))))
+
+#|
+<doc R7RS string-for-each
+ * (string-for-each proc string1 string2 ...)
+ *
+ * The arguments to |string-for-each| are like the arguments to
+ * |string-map|, but |string-for-each| calls |proc| for its side effects
+ * rather than for its values. Unlike |string-map|, |string-for-each| is
+ * guaranteed to call |proc| on the elements of the lists in order from
+ * the first element(s) to the last, and the value returned by
+ * |string-for-each| is unspecified. If more than one string is given and
+ * not all strings have the same length, |string-for-each| terminates when
+ * the shortest string runs out.
+ * @lisp
+ * (let ((v (list)))
+ *   (string-for-each (lambda (c) (set! v (cons (char->integer c) v)))
+ *                    "abcde")
+ *    v)
+ *        => (101 100 99 98 97)
+ * @end lisp
+doc>
+|#
+(define (string-for-each proc . strings)
+  (let ((strs (map (lambda (x)
+                     (unless (string? x)
+                       (error 'string-for-each "bad string ~S" x))
+                     (string->list x))
+                   strings)))
+    (apply for-each proc strs)))
+
+
+#|
+<doc R7RS vector-for-each
+ * (vector-for-each proc vector1 vector2 ...)
+ *
+ * The arguments to |vector-for-each| are like the arguments to
+ * |vector-map|, but |vector-for-each| calls |proc| for its side effects
+ * rather than for its values. Unlike |vector-map|, |vector-for-each| is
+ * guaranteed to call |proc| on the elements of the lists in order from
+ * the first element(s) to the last, and the value returned by
+ * |vector-for-each| is unspecified. If more than one vector is given and
+ * not all vectors have the same length, |vector-for-each| terminates when
+ * the shortest vector runs out.
+ * @lisp
+ * (let ((v (make-vector 5)))
+ *   (vector-for-each (lambda (i) (vector-set! v i (* i i)))
+ *                 '#(0 1 2 3 4))
+ *   v)
+ *        => #(0 1 4 9 16)
+ * @end lisp
+doc>
+|#
+(define (vector-for-each proc . vectors)
+  (unless (every vector? vectors)
+    (error 'vector-for-each "bad list of vectors ~S" vectors))
+  (apply for-each proc (map vector->list vectors)))
+
+;;;; ----------------------------------------------------------------------
+;;;; 6.11 Exceptions
+;;;; ----------------------------------------------------------------------
+#|
+<doc R7RS error-object?
+ * (error-object? obj )
+ *
+ * Returns `#t` if |obj| is an object created by error. Otherwise,
+ * it returns `#f`.
+doc>
+|#
+(define (error-object? obj)
+  (and (condition? obj)
+       (condition-has-type? obj &error-message)))
+
+
+#|
+<doc R7RS error-object-message
+ * (error-object-message error-object)
+ *
+ * Returns the message encapsulated by |error-object|.
+ *
+doc>
+|#
+(define (error-object-message obj)
+  (if (error-object? obj)
+      (condition-ref obj 'r7rs-msg)
+      (error "bad error object: ~S" obj)))
+
+#|
+<doc R7RS error-object-irritants
+ * (error-object-irritants error-object)
+ *
+ * Returns the message encapsulated by |error-object|.
+ *
+doc>
+|#
+(define (error-object-irritants obj)
+  (if (error-object? obj)
+      (condition-ref obj 'r7rs-irritants)
+      (error "bad error object: ~S" obj)))
+
+#|
+<doc R7RS read-error? file-error?
+ * (read-error? obj)
+ * (file-error? obj)
+ *
+
+ * Error type predicates. Returns `#t` if |obj| is an object raised
+ * by the read procedure or by the inability to open an input or
+ * output port on a file, respectively. Otherwise, it returns `#f`.
+ *
+doc>
+|#
+(define (read-error? obj)
+  (and (condition? obj)
+       (condition-has-type? obj &read-error)))
+
+(define (file-error? obj)
+  (and (condition? obj)
+       (condition-has-type? obj &i/o-filename-error)))
+
+
+;;;; ----------------------------------------------------------------------
+;;;; 6.13 Input and Output
+;;;; ----------------------------------------------------------------------
+
+;;;
+;;; 6.13.1 Ports
+;;;
+
+#|
+<doc R7RS call-with-port
+ * (call-with-port port proc)
+ *
+ * The |call-with-port| procedure calls |proc| with |port| as an
+ * argument. If |proc| returns, then the |port| is closed automatically
+ * and the values yielded by the |proc| are returned.
+ * If |proc| does not return, then the |port| must not be closed
+ * automatically unless it is possible to prove that the port
+ * will never again be used for a read or write operation.
+ *
+ * It is an error if proc does not accept one argument.
+doc>
+|#
+(define (call-with-port port proc)
+  #;(unless (port? port)
+    (error 'call-with-port  "bad port ~S" port))
+  #;(unless (and (procedure? proc) (memq (%procedure-arity proc) '(-2 -1 1)))
+    (error 'call-with-port "bad procedure ~S" proc))
+  (%claim-error 'call-with-port
+                (let ((res (call-with-values
+                               (lambda () (proc port))
+                             list)))
+                  (close-port port)
+                  (apply values res))))
+
+
+#|
+<doc R7RS input-port-open? output-port-open?
+ * (input-port-open? port)
+ * (output-port-open? port)
+ *
+ * Returns `#t` if port is still open and capable of performing
+ * input or output, respectively, and `#f` otherwise.
+doc>
+|#
+(define (input-port-open? port)
+  (unless (input-port? port)
+    (error "bad input port ~S" port))
+  (not (port-closed? port)))
+
+(define (output-port-open? port)
+  (unless (output-port? port)
+    (error "bad output port ~S" port))
+  (not (port-closed? port)))
+
+
+#|
+<doc R7RS read-string
+ * (read-string k)
+ * (read-string k port)
+ *
+ * Reads the next |k| characters, or as many as are available
+ * before the end of file, from the textual input |port| into a
+ * newly allocated string in left-to-right order and returns the
+ * string. If no characters are available before the end of file,
+ * an end-of-file object is returned.
+doc>
+|#
+(define (read-string k :optional (port (current-input-port)))
+  (%claim-error
+    'read-string
+    (unless (positive? k)
+      (error "parameter must be a positive integer. It was: ~S" k))
+    (unless (and (input-port? port) (textual-port? port))
+      (error "bad textual input port ~S" port))
+
+    (let ((buffer (make-string k)))
+      (let Loop ((i 0)
+                 (c (read-char port)))
+        (cond
+          ((eof-object? c) (if (zero? i)
+                               (eof-object)
+                               (substring buffer 0 i)))
+          ((= i (- k 1))   (string-set! buffer i c)
+                           buffer)
+          (else            (string-set! buffer i c)
+                           (Loop (+ i 1) (read-char port))))))))
+
+#|
+<doc R7RS read-u8
+ * (read-u8)
+ * (read-u8 port)
+ *
+ * Returns the next byte available from the binary input |port|,
+ * updating the |port| to point to the following byte. If no more
+ * bytes are available, an end-of-file object is returned.
+ *
+ * @l
+ * NOTE: This function is similar to the |read-byte|
+ * function, excepted that it can be used only on  a binary port.
+doc>
+|#
+
+(define (read-u8 :optional (port (current-input-port)))
+  (%claim-error
+    'read-u8
+    (unless (binary-port? port)
+      (error "bad binary port ~S" port))
+    (read-byte port)))
+
+#|
+<doc R7RS peek-u8
+ * (peek-u8)
+ * (peek-u8 port)
+ *
+ * Returns the next byte available from the binary input |port|,
+ * but without updating the |port| to point to the following
+ * byte. If no more bytes are available, an end-of-file object
+ * is returned.
+ *
+ * @l
+ * NOTE: This function is similar to the |peek-byte|
+ * function, excepted that it can be used only on  a binary port.
+doc>
+|#
+(define (peek-u8 :optional (port (current-input-port)))
+  (%claim-error
+    'peek-u8
+    (unless (binary-port? port)
+      (error "bad binary port ~S" port))
+    (peek-byte port)))
+
+
+#|
+<doc R7RS read-bytevector!
+ * (read-bytevector! k)
+ * (read-bytevector! k port)
+ * (read-bytevector! k port start)
+ * (read-bytevector! k port start end)
+ *
+ * Reads the next |end - start| bytes, or as many as are available
+ * before the end of file, from the binary input port
+ * into |bytevector| in left-to-right order beginning at the start
+ * position. If |end| is not supplied, reads until the end of
+ * |bytevector| has been reached. If |start| is not supplied, reads
+ * beginning at position 0. Returns the number of bytes read.
+ * If no bytes are available, an end-of-file object is returned.
+doc>
+|#
+(define (read-bytevector! bv :optional (port (current-input-port))
+                                       (start 0)
+                                       (end -1 end?))
+  (%claim-error
+   'read-bytevector!
+   (unless (bytevector? bv)
+     (error "bad bytevector ~S" bv))
+   (unless end?
+     (set! end (bytevector-length bv)))
+   (%read-bytevector! bv port start end)))
+
+#|
+<doc R7RS write-string
+ * (write-string string)
+ * (write-string string port)
+ * (write-string string port start)
+ * (write-string string port start end)
+ *
+ * Writes the characters of |string| from |start| to |end| in
+ * left-to-right order to the textual output |port|.
+doc>
+|#
+(define (write-string str :optional (port (current-output-port))
+                                    (start 0)
+                                    (end -1 end?))
+  (%claim-error
+   'write-string
+   (%write-string str port start (if end? end (string-length str)))))
+
+
+#|
+<doc R7RS write-u8
+ * (write-u8 byte)
+ * (write-u8 byte port)
+ *
+ * Writes the |byte| to the given binary output port.
+doc>
+|#
+(define (write-u8 byte :optional (port (current-output-port)))
+  (%claim-error
+   'write-u8
+   (unless (binary-port? port)
+     (error "bad binary port ~S" port))
+   (write-byte byte port)))
+
+#|
+<doc R7RS write-bytevector
+ * (write-bytevector bytevector)
+ * (write-bytevector bytevector port)
+ * (write-bytevector bytevector port start)
+ * (write-bytevector bytevector port start end)
+ *
+ * Writes the bytes of |bytevector| from |start| to |end| in
+ * left-to-right order to the binary output |port|.
+doc>
+|#
+(define (write-bytevector bv :optional (port (current-output-port))
+                                       (start 0)
+                                       (end -1 end?))
+  (%claim-error
+   'write-bytevector
+   (unless (bytevector? bv)     (error "bad bytevector ~S" bv))
+   (unless (binary-port? port)  (error "bad binary port ~S" port))
+   (unless end?                 (set! end (bytevector-length bv)))
+
+   (let Loop ((i start))
+     (when (< i end)
+       (write-byte (bytevector-u8-ref bv i) port)
+       (Loop (+ i 1))))))
+
+;;;; ----------------------------------------------------------------------
+;;;; 6.11 Exceptions
+;;;;
+;;;; ----------------------------------------------------------------------
+#|
+<doc EXT-SYNTAX with-handler
+ * (with-handler <handler> <expr~1~> ... <expr~n~>)
+ *
+ * Evaluates the sequences of expressions |<expr~1~>| to |<expr~n~>|.
+ * |<handler>| must be a procedure that accepts one argument. It is installed
+ * as the current exception handler for the dynamic extent (as determined by
+ * dynamic-wind) of the evaluations of the expressions
+ * @lisp
+ * (with-handler (lambda (c)
+ *                 (display "Catch an error\\n"))
+ *    (display "One ... ")
+ *    (+ "will yield" "an error")
+ *    (display "... Two"))
+ *        @print{} "One ... Catch an error"
+ * @end lisp
+doc>
+
+<doc R7RS with-exception-handler
+ * (with-exception-handler <handler> <thunk>)
+ *
+ * This form is similar to |with-handler|. It uses a *_thunk_* instead of
+ * a sequence of expressions. It is conform to {{link-srfi 34}}.
+ * In fact,
+ * @lisp
+ * (with-handler <handler> <expr1> ... <exprn>)
+ * @end lisp
+ * is equivalent to
+ * @lisp
+ * (with-exception-handler <handler>
+ *   (lambda () <expr1> ... <exprn>))
+ * @end lisp
+doc>
+|#
+
+(define-struct %continuable-exception value)
+
+(define (with-exception-handler handler thunk)
+  (let* ((err (gensym))
+         (res (with-handler (lambda(v)
+                              (if (%continuable-exception? v)
+                                  (handler (%continuable-exception-value v))
+                                 (begin
+                                   (handler v)
+                                   err)))
+                            (thunk))))
+    (if (eq? res err)
+        (error "exception handler returned on non-continuable exception")
+        res)))
+
+#|
+<doc R7RS raise-continuable
+ * (raise-continuable obj)
+ *
+ * Raises an exception by invoking the current exception handler on
+ * |obj|. The handler is called with the same dynamic environment as the
+ * call to |raise-continuable|, except that: (1) the current exception
+ * handler is the one that was in place when the handler being called was
+ * installed, and (2) if the handler being called returns, then it will again
+ * become the current exception handler.  If the handler returns, the values
+ * it returns become the values returned by the call to |raise-continuable|.
+ * @lisp
+ * (with-exception-handler
+ *   (lambda (con)
+ *     (cond
+ *       ((string? con)
+ *        (display con))
+ *       (else
+ *        (display "a warning has been issued")))
+ *     42)
+ *   (lambda ()
+ *     (+ (raise-continuable "should be a number")
+ *        23)))
+ *   ;; prints should be a number
+ *                 => 65
+ * @end lisp
+doc>
+|#
+(define (raise-continuable val)
+  (let ((hdlr (current-exception-handler)))
+    (hdlr (make-%continuable-exception val))))
+
+
+#|
+<doc R7RS guard
+ * (guard (<var> <clause1 > <clause2 > ...)  <body>)
+ *
+ * Evaluating a guard form evaluates |<body>| with an exception handler
+ * that binds the raised object to |<var>| and within the scope of that
+ * binding evaluates the clauses as if they were the clauses of a cond
+ * expression. That implicit cond  expression is evaluated with the
+ * continuation and dynamic environment of the |guard| expression.
+ * If every `|<clause>|`s test evaluates to false and there is no |else|
+ * clause, then |raise| is re-invoked on the raised object within the
+ * dynamic environment of the original call to |raise| except that the
+ * current exception handler is that of the |guard| expression.
+ *
+ * @lisp
+ * (guard (condition
+ *          ((assq 'a condition) => cdr)
+ *          ((assq 'b condition)))
+ *   (raise (list (cons 'a 42))))
+ *          => 42
+ *
+ * (guard (condition
+ *          ((assq 'a condition) => cdr)
+ *          ((assq 'b condition)))
+ *   (raise (list (cons 'b 23))))
+ *          => (b . 23)
+ *
+ * (with-handler (lambda (c) (format "value ~A was raised" c))
+ *   (guard (condition
+ *        ((assq 'a condition) => cdr)
+ *        ((assq 'b condition)))
+ *       (raise (list (cons 'x 0)))))
+ *          => "value ((x . 0)) was raised"
+ * @end lisp
+doc>
+|#
+(define-macro (guard clauses . body)
+  (let* ((var      (car clauses))
+         (last     (last-pair clauses))
+         (ex       (gensym))
+         (old-hdlr (gensym))
+         (reraised (gensym))
+         (res      (gensym)))
+    `(let ((,old-hdlr (current-exception-handler)))
+       (with-handler
+        (lambda (,ex)
+          (let* ((,var (if (%continuable-exception? ,ex)
+                           (%continuable-exception-value ,ex)
+                           ,ex))
+                 (,reraised #f)
+                 (,res (cond
+                        ,@(cdr clauses)
+                           ;; Add an else clause if not present
+                        ,@(if (and (pair? last) (pair? (car last)) (eq? (caar last) 'else))
+                              '()
+                              `((else (set! ,reraised #t)
+                                      (,old-hdlr ,ex)))))))
+            (if ,reraised
+                ,res
+                (if (%continuable-exception? ,ex)
+                    (raise ,res)
+                    ,res))))
+        ,@body))))
+
+;;;; ----------------------------------------------------------------------
+;;;; 6.14 System Interface
+;;;; ----------------------------------------------------------------------
+
+#|
+<doc R7RS current-jiffy
+ * (current-jiffy)
+ *
+ * Returns the number of _jiffies_ as an exact integer that
+ * have elapsed since an arbitrary, implementation-defined
+ * epoch. A jiffy is an implementation-defined fraction of
+ * a second which is defined by the return value of the
+ * |jiffies-per-second| procedure. The starting epoch is
+ * guaranteed to be constant during a run of the program,
+ * but may vary between runs.
+doc>
+|#
+(define current-jiffy
+  ;; This implementation probably allocates bignums on 32 bits machines
+  ;; Therefore, the resolution should be lowered on these architectures.
+  (let ((initial-time (current-time))
+        (time->jiffy  (lambda (t)
+                        (+ (* (struct-ref t 'second) #e1e9)
+                           (struct-ref t 'nanosecond)))))
+    (lambda ()
+      (- (time->jiffy (current-time))
+         (time->jiffy initial-time)))))
+
+#|
+<doc R7RS jiffies-per-second
+ * (jiffies-per-seconds)
+ *
+ * Returns an exact integer representing the number of jiffies
+ * per second.
+ *
+ * @lisp
+ * (define (time-length)
+ *   (let ((list (make-list 100000))
+ *         (start (current-jiffy)))
+ *     (length list)
+ *     (/ (- (current-jiffy) start)
+ *        (jiffies-per-second))))
+ * @end lisp
+doc>
+|#
+(define (jiffies-per-second) #e1e9)
+
+
+#|
+<doc R7RS features
+ * (features)
+ *
+ * Returns a list of the feature identifiers which |cond-expand|
+ * treats as true. Here is an
+ * example of what |features| might return:
+ *
+ * @lisp
+ * (features) => (STklos STklos-{{version}} exact-complex
+*                 ieee-float full-unicode ratios little-endian ...)
+ * @end lisp
+doc>
+|#
+(define (features)
+  (let ((all (in-module |SRFI-0| *all-features*)))
+    (apply append
+           (map (lambda (x)
+                  (cond
+                    ((symbol? x)     (list x))
+                    ((pair? (car x)) (car x))
+                    (else            (list (car x)))))
+                all))))

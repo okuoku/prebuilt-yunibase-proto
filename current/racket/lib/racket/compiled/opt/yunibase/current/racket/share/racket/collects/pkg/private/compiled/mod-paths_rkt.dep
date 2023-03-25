@@ -1,0 +1,1 @@
+("8.8.0.10" ta6le ("86606d5cbd2aff70399ad245d8c04cc189843f9b" . "07ce49a52e321a7d453b1534c29eb20243c0b53a") (collects #"pkg" #"private" #"get-info.rkt") (collects #"pkg" #"private" #"metadata.rkt") (collects #"racket" #"base.rkt") (collects #"racket" #"format.rkt") (collects #"racket" #"runtime-config.rkt") (collects #"racket" #"set.rkt") (collects #"syntax" #"modcollapse.rkt"))

@@ -1,0 +1,1 @@
+("8.8.0.10" ta6le ("41f8cab30f55a76790f00075017f4d36d740869c" . "6188c2448276b5fe2e578f97033e2a6e47b611d1") (collects #"file" #"gzip.rkt") (collects #"racket" #"base.rkt") (collects #"racket" #"runtime-config.rkt"))

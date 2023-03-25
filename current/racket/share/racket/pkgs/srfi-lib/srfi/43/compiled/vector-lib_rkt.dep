@@ -1,0 +1,1 @@
+("8.8.0.10" ta6le ("9b2bc9f79cd7c005be126363f313f7d3a1640e47" . "9a3a6667752cf44d4c52fb382d2a79e9e971bea0") (collects #"mzlib" #"contract.rkt") (collects #"mzlib" #"etc.rkt") (collects #"mzscheme" #"main.rkt") (collects #"srfi" #"8" #"receive.rkt"))

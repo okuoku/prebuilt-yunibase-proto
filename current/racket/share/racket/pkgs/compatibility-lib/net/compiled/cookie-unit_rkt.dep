@@ -1,0 +1,1 @@
+("8.8.0.10" ta6le ("621bf803838f0db90700e41ff53fa33114ed5a8a" . "fa86ae8d31bea5f6b2b0dbc02b3ad97fb7eaf009") (collects #"net" #"cookie-sig.rkt") (collects #"net" #"cookie.rkt") (collects #"racket" #"base.rkt") (collects #"racket" #"runtime-config.rkt") (collects #"racket" #"unit.rkt"))

@@ -1,0 +1,1 @@
+("8.8.0.10" ta6le ("8fe1b9707c7bbdeb2d86c9dba50208e2cff6d598" . "a6ecdf4269985c73d0c142e5bf84c10f45337676") (collects #"ffi" #"cvector.rkt") (collects #"ffi" #"unsafe.rkt") (collects #"ffi" #"winapi.rkt") (collects #"racket" #"base.rkt") (collects #"racket" #"contract.rkt") (collects #"racket" #"promise.rkt") (collects #"racket" #"runtime-config.rkt"))

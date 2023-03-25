@@ -1,0 +1,1 @@
+("8.8.0.10" ta6le ("4e313b5a2f90c825964b3de93e86705649c91e4d" . "607e768b5e333381caa091e69cba87e312e412c2") (collects #"net" #"unihead.rkt") (collects #"racket" #"base.rkt") (collects #"racket" #"promise.rkt") (collects #"racket" #"runtime-config.rkt"))

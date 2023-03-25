@@ -1,0 +1,161 @@
+;;;;
+;;;; ffi.stk            -- FFI support
+;;;;
+;;;; Copyright © 2007-2022 Erick Gallesio - I3S-CNRS/ESSI <eg@essi.fr>
+;;;;
+;;;;
+;;;; This program is free software; you can redistribute it and/or modify
+;;;; it under the terms of the GNU General Public License as published by
+;;;; the Free Software Foundation; either version 2 of the License, or
+;;;; (at your option) any later version.
+;;;;
+;;;; This program is distributed in the hope that it will be useful,
+;;;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;;;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;;;; GNU General Public License for more details.
+;;;;
+;;;; You should have received a copy of the GNU General Public License
+;;;; along with this program; if not, write to the Free Software
+;;;; Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
+;;;; USA.
+;;;;
+;;;;           Author: Erick Gallesio [eg@essi.fr]
+;;;;    Creation date: 14-Bun-2007 09:24 (eg)
+;;;;
+
+(export make-external-function make-callback define-external)
+
+
+(define make-external-function #f)
+(define make-callback          #f)
+
+(let ((table '((:void       0)
+               (:char       1)
+               (:short      2)
+               (:ushort     3)
+               (:int        4)
+               (:uint       5)
+               (:long       6)
+               (:ulong      7)
+               (:lonlong    8)
+               (:ulonlong   9)
+               (:float      10)
+               (:double     11)
+               (:boolean    12)
+               (:pointer    13)
+               (:string     14)
+               (:int8       15)
+               (:int16      16)
+               (:int32      17)
+               (:int64      18)
+               (:obj        19))))
+
+  (define (arg-type->number k argument?)
+    (let ((info (assoc k table)))
+      (if info
+      (let ((r (cadr info)))
+        (if (and (zero? r) argument?)
+        (error 'define-external "parameter of type :void are forbidden")
+        (cadr info)))
+      (error 'define-external "bad type name ~S" k))))
+
+  (define (parse-parameters lst)
+    (map (lambda (x)
+       (cond
+         ((keyword? x)
+          (arg-type->number x #t))
+         ((pair? x)
+          (if (and (symbol? (car x)) (keyword? (cadr x)) (null? (cddr x)))
+          (arg-type->number (cadr x) #t)
+          (error 'make-external-function
+             "bad parameter description: ~S" x)))
+         (else
+          (error 'make-external-function "bad parameter description: ~S" x))))
+     lst))
+
+
+  ;; make-external-function
+  (set! make-external-function
+    (lambda (entry-name parameters return-type lib-name)
+      (%make-ext-func entry-name
+              (parse-parameters parameters)
+              (arg-type->number return-type #f)
+              lib-name)))
+
+  ;; make-callback
+  (set! make-callback
+    (lambda (proc types data)
+      (%make-callback proc (parse-parameters types) data))))
+
+
+
+#|
+<doc EXT-SYNTAX define-external
+ * (define-external name parameters option)
+ *
+ * The form |define-external| binds a new procedure to |name|.
+ * The arity of this new procedure is defined by the typed list of
+ * parameters given by |parameters|. This parameters list is a list
+ * of keywords (as defined in the previous table) or couples whose first
+ * element is the name of the parameter, and the second one is a type
+ * keyword.  All the types defined in the above table, except
+ * |:void|, are allowed for the parameters of a foreign function.
+ *
+ * |Define-external| accepts several options:
+ *
+ * - |:return-type| is used to define the type of the value returned
+ * by the foreign function. The type returned must be chosen in the types specified
+ * in the table. For instance:
+ * +
+ * @lisp
+ * (define-external maximum(:int :int)
+ *    :return-type :int)
+ * @end lisp
+ * +
+ * defines the foreign function maximum which takes two C integers and
+ * returns an integer result. Omitting this option default to a result
+ * type equal to |:void| (i.e. the returned value is _undefined_).
+ *
+ * - |:entry-name| is used to specify the name of the foreign
+ * function in the C world. If this option is omitted, the entry-name is
+ * supposed to be |name|. For instance:
+ * +
+ * @lisp
+ * (define-external minimum((a :int) (b :int))
+ *    :return-type :int
+ *    :entry-name  "min")
+ * @end lisp
+ * +
+ * defines the Scheme function |minimum| whose application
+ * executes the C function called |min|.
+ *
+ * - |:library-name| is used to specify the library which contains the
+ * foreign-function. If necessary, the library is loaded before calling the
+ * C function. So,
+ * +
+ * @lisp
+ * (define-external minimum((a :int) (b :int))
+ *    :return-type  :int
+ *    :entry-name   "min"
+ *    :library-name "libminmax")
+ * @end lisp
+ * +
+ * defines a function which will execute the function |min|
+ * located in the library |libminmax.xx| (where |xx| is the suffix used
+ * for shared libraries on the running system (generally |so|)).
+ *
+doc>
+|#
+(define-macro (define-external name parameters . args)
+  (let* ((lib        (key-get args :library-name ""))
+         (lib-name   (if (and (equal? lib "")
+                              (equal? (running-os) 'cygwin-windows))
+                         "cygwin1.dll"
+                         lib))
+         (entry-name  (key-get args :entry-name (symbol->string name)))
+         (return-type (key-get args :return-type :void)))
+
+    `(define ,name (make-external-function ,entry-name
+                                           ',parameters
+                                           ,return-type
+                                           ,lib-name))))

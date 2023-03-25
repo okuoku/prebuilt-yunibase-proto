@@ -1,0 +1,1 @@
+("8.8.0.10" ta6le ("4491996863a3cbb05c7933de2f6721f54e8bbbde" . "08360112ae7e41c5cb7201f952e3f720f86a5aa7") (collects #"ffi" #"unsafe" #"private" #"win32.rkt") (collects #"ffi" #"unsafe.rkt") (collects #"ffi" #"winapi.rkt") (collects #"racket" #"base.rkt") (collects #"racket" #"runtime-config.rkt"))

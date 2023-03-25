@@ -1,0 +1,1 @@
+("8.8.0.10" ta6le ("49f84fdc1615019688eb37e5174d2b5786017cb0" . "6bb92fe49618a4905fb0fd0b275183ee511b4d36") (collects #"racket" #"base.rkt") (collects #"racket" #"private" #"place-local.rkt") (collects #"racket" #"runtime-config.rkt"))

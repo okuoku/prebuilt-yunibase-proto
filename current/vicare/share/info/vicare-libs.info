@@ -1,0 +1,1202 @@
+This is vicare-libs.info, produced by makeinfo version 6.5 from
+vicare-libs.texi.
+
+This document describes the libraries distributed along with version
+0.4.1-devel.3 of Vicare Scheme, an R6RS compliant native compiler for
+the Scheme language.
+
+Copyright (C) 2010-2017 by Marco Maggi.
+Copyright (C) 2006-2010 by Abdulaziz Ghuloum.
+
+   The documentation of IrRegex is Copyright (C) 2005-2012 Alex Shinn.
+All rights reserved.
+
+   The documentation of Pregexp is Copyright (C) 1999-2005 Dorai
+Sitaram.  All rights reserved.
+
+   The documentation of the library '(vicare formations)' is derived
+from the documentation of Guile.  Copyright (C) 1996-2005, 2009-2013
+Free Software Foundation.
+
+   The documentation of the libraries '(vicare parser-tools silex ---)'
+are derived form the documentation of SILex.  Copyright (C) 2001, 2009
+Danny Dube'.
+
+     This program is free software: you can redistribute it and/or
+     modify it under the terms of the GNU General Public License version
+     3 as published by the Free Software Foundation.
+
+     This program is distributed in the hope that it will be useful, but
+     WITHOUT ANY WARRANTY; without even the implied warranty of
+     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+     General Public License for more details.
+
+     You should have received a copy of the GNU General Public License
+     along with this program.  If not, see
+     <http://www.gnu.org/licenses/>.
+
+   Trademarks used herein are the property of their respective owners.
+INFO-DIR-SECTION Development
+START-INFO-DIR-ENTRY
+* vicare-libs: (vicare-libs).   Libraries for Vicare Scheme.
+END-INFO-DIR-ENTRY
+
+
+Indirect:
+vicare-libs.info-1: 1645
+vicare-libs.info-2: 302334
+vicare-libs.info-3: 602077
+vicare-libs.info-4: 902440
+vicare-libs.info-5: 1205783
+vicare-libs.info-6: 1502484
+vicare-libs.info-7: 1811104
+vicare-libs.info-8: 2107030
+vicare-libs.info-9: 2402688
+vicare-libs.info-10: 2702308
+vicare-libs.info-11: 3436296
+vicare-libs.info-12: 3474459
+
+Tag Table:
+(Indirect)
+Node: Top1645
+Node: lang6894
+Node: keywords8228
+Node: cond-expand13969
+Node: include17170
+Node: amb17978
+Node: amb api19037
+Node: amb api core19483
+Node: amb api random21289
+Node: amb api generator22640
+Node: amb api utilities23609
+Node: amb api condition24282
+Node: amb examples25384
+Node: amb examples simple25683
+Node: amb examples ssc27732
+Ref: fig:amb_ssc_tree28134
+Node: amb examples coloring30528
+Node: simple-match38338
+Node: simple-match syntax39126
+Node: variables52974
+Node: syntaxes54971
+Node: syntaxes defines55624
+Node: syntaxes bindings56297
+Node: syntaxes sequencing57097
+Node: syntaxes conversion57589
+Node: syntaxes args59579
+Node: syntaxes misc60028
+Node: makers61144
+Node: makers intro61838
+Node: makers api69433
+Node: custom-ports73308
+Node: custom-ports pairs73599
+Node: asciis75771
+Node: asciis generic76392
+Node: asciis conversion78739
+Node: asciis predicates80389
+Node: asciis uri84141
+Node: hooks87932
+Node: callables89309
+Node: c-enums90521
+Node: pipelines95399
+Node: streams97416
+Node: streams basic98652
+Node: streams cons103950
+Node: streams from107276
+Node: streams to109093
+Node: streams ops109885
+Node: streams select116154
+Node: streams range119047
+Node: streams of120928
+Node: streams fold122970
+Node: streams unfold126544
+Node: streams map129891
+Node: streams match131162
+Node: streams utilities134850
+Node: streams examples138797
+Node: streams examples infinite139519
+Node: streams examples generators143141
+Node: streams examples pipeline146164
+Node: streams examples persistent150587
+Node: streams examples passes153544
+Node: streams examples pitfalls156560
+Node: loops164104
+Node: loops intro164667
+Node: loops comprehensions165735
+Node: loops comprehensions do166339
+Node: loops comprehensions list167421
+Node: loops comprehensions string168814
+Node: loops comprehensions vector170084
+Node: loops comprehensions arith171380
+Node: loops comprehensions search173423
+Node: loops comprehensions fold174710
+Node: loops comprehensions define177629
+Node: loops qualifiers179944
+Node: loops generators183207
+Node: loops generators intro183812
+Node: loops generators do185396
+Node: loops generators typed187176
+Node: loops generators ranges190963
+Node: loops generators port193629
+Node: loops generators dispatch194259
+Node: loops generators let201417
+Node: loops generators parallel201970
+Node: loops generators cond202648
+Node: comparisons203620
+Node: comparisons intro204972
+Node: comparisons examples207687
+Node: comparisons conventions210636
+Node: comparisons atoms211595
+Node: comparisons sequence213938
+Node: comparisons pair218118
+Node: comparisons default219951
+Node: comparisons cons220739
+Node: comparisons branch224446
+Node: comparisons pred226667
+Node: comparisons minmax232548
+Node: comparisons debug234132
+Node: restarts235204
+Ref: restarts-Footnote-1236607
+Node: restarts signal236692
+Node: restarts handler-case237650
+Node: restarts ignore-errors244596
+Node: restarts handler-bind246239
+Node: restarts restart-case259925
+Node: restarts assoc265770
+Node: restarts invoke269653
+Node: restarts func274221
+Node: restarts errors284450
+Node: ibodies286566
+Node: tuples287710
+Node: srfi289760
+Node: srfi cond-expand293529
+Node: srfi cond-expand license294155
+Node: srfi cond-expand abstract295659
+Node: srfi cond-expand rationale297875
+Node: srfi cond-expand spec302334
+Node: srfi cond-expand vicare304508
+Node: srfi list309875
+Node: srfi list license310567
+Node: srfi list abstract312010
+Node: srfi list rationale312537
+Node: srfi list discussion316089
+Node: srfi list disc general316523
+Node: srfi list disc linear update319822
+Node: srfi list disc improper324464
+Node: srfi list disc errors326686
+Node: srfi list disc not included328085
+Node: srfi list spec328462
+Node: srfi list spec intro329337
+Node: srfi list spec cons330219
+Node: srfi list spec pred332754
+Node: srfi list spec select337351
+Node: srfi list spec misc342436
+Node: srfi list spec fold348840
+Node: srfi list spec filter363350
+Node: srfi list spec search365704
+Node: srfi list spec delete376946
+Node: srfi list spec alist380386
+Node: srfi list spec set384133
+Node: srfi list spec side394125
+Node: srfi list ack394747
+Node: srfi list references396074
+Node: srfi and-let-star397241
+Node: srfi and-let-star license397897
+Node: srfi and-let-star abstract399179
+Node: srfi and-let-star rationale399708
+Ref: srfi and-let-star rationale-Footnote-1402896
+Node: srfi and-let-star spec403005
+Node: srfi string-ports404771
+Node: srfi string-ports license405324
+Node: srfi string-ports abstract406610
+Node: srfi string-ports rationale407145
+Node: srfi string-ports spec407587
+Node: srfi receive409063
+Node: srfi receive license409757
+Node: srfi receive abstract411017
+Node: srfi receive rationale411414
+Node: srfi receive spec414032
+Node: srfi records415778
+Node: srfi records license416322
+Node: srfi records abstract417580
+Node: srfi records rationale418040
+Node: srfi records spec419019
+Node: srfi let-values422103
+Node: srfi let-values license422684
+Node: srfi let-values abstract423956
+Node: srfi let-values rationale424268
+Node: srfi let-values spec424562
+Node: srfi strings426687
+Node: srfi strings license427273
+Node: srfi strings ratio428716
+Node: srfi strings ratio code-point429833
+Node: srfi strings ratio i18n431434
+Node: srfi strings ratio naming438237
+Node: srfi strings ratio shared439595
+Node: srfi strings ratio r5rs443085
+Node: srfi strings ratio extra444316
+Node: srfi strings spec446802
+Node: srfi strings spec intro447751
+Node: srfi strings spec pred450651
+Node: srfi strings spec cons453410
+Node: srfi strings spec list454239
+Node: srfi strings spec select457053
+Node: srfi strings spec modify462907
+Node: srfi strings spec compar463537
+Node: srfi strings spec prefix470689
+Node: srfi strings spec search473812
+Node: srfi strings spec case-map477897
+Node: srfi strings spec append480114
+Node: srfi strings spec fold484087
+Node: srfi strings spec replicate494664
+Node: srfi strings spec misc497380
+Node: srfi strings ack500705
+Node: srfi strings references502253
+Node: srfi char-sets504184
+Node: srfi char-sets abstract504755
+Node: srfi char-sets rationale505257
+Node: srfi char-sets spec508404
+Node: srfi char-sets spec conv508976
+Node: srfi char-sets spec general509950
+Node: srfi char-sets spec iter511473
+Node: srfi char-sets spec create516891
+Node: srfi char-sets spec query521095
+Node: srfi char-sets spec algebra522913
+Node: srfi char-sets spec std525536
+Node: srfi char-sets ack526778
+Node: srfi char-sets license528294
+Node: srfi case-lambda529713
+Node: srfi case-lambda license530319
+Node: srfi case-lambda abstract531598
+Node: srfi case-lambda rationale531874
+Node: srfi case-lambda spec532479
+Node: srfi time534166
+Node: srfi time license534734
+Node: srfi time abstract535985
+Node: srfi time spec537073
+Node: srfi time spec intro537727
+Node: srfi time spec const540346
+Node: srfi time spec current540986
+Node: srfi time spec time542054
+Node: srfi time spec date545958
+Node: srfi time spec conversion547637
+Node: srfi time spec string552063
+Node: srfi time ack557491
+Node: srfi error-reporting558244
+Node: srfi error-reporting license558859
+Node: srfi error-reporting abstract560181
+Node: srfi error-reporting rationale560613
+Node: srfi error-reporting spec562150
+Node: srfi marray565054
+Node: srfi marray abstract565659
+Node: srfi marray rationale566210
+Node: srfi marray spec568027
+Node: srfi marray ack573524
+Node: srfi marray copyright574580
+Node: srfi shared structures575807
+Node: srfi shared structures license576467
+Node: srfi shared structures abstract577758
+Node: srfi shared structures rationale578785
+Node: srfi shared structures spec580792
+Node: srfi specialize-procedures585263
+Node: srfi specialize-procedures license586060
+Node: srfi specialize-procedures abstract587365
+Node: srfi specialize-procedures rationale589841
+Node: srfi specialize-procedures spec591861
+Node: srfi specialize-procedures design593555
+Node: srfi specialize-procedures ack599190
+Node: srfi random599660
+Node: srfi random license602077
+Node: srfi random abstract603333
+Node: srfi random rationale605619
+Node: srfi random spec606921
+Node: srfi random design611897
+Node: srfi random usage615560
+Node: srfi random ack619788
+Node: srfi random references620229
+Node: srfi basic-format622653
+Node: srfi basic-format abstract623227
+Node: srfi basic-format rationale623595
+Node: srfi basic-format spec624318
+Node: srfi basic-format examples625623
+Node: srfi basic-format copyright625985
+Node: srfi rec627233
+Node: srfi rec license627944
+Node: srfi rec abstract629187
+Node: srfi rec rationale629951
+Node: srfi rec spec634458
+Node: srfi rec ack635647
+Node: srfi rec references635991
+Node: srfi parameters636512
+Node: srfi parameters license637053
+Node: srfi parameters abstract638325
+Node: srfi parameters rationale639012
+Node: srfi parameters spec641954
+Node: srfi args-fold647199
+Node: srfi args-fold license647821
+Node: srfi args-fold abstract649097
+Node: srfi args-fold rationale649670
+Node: srfi args-fold spec652343
+Node: srfi args-fold examples655333
+Node: srfi streams663141
+Node: srfi streams license664200
+Node: srfi streams abstract665470
+Node: srfi streams rationale666595
+Node: srfi streams primitive670007
+Node: srfi streams primitive example675001
+Node: srfi streams derived676112
+Node: srfi streams utilities705288
+Node: srfi streams examples709195
+Node: srfi streams examples infinite710003
+Node: srfi streams examples generators713638
+Node: srfi streams examples pipeline716679
+Node: srfi streams examples persistent721120
+Node: srfi streams examples passes724095
+Node: srfi streams examples pitfalls727129
+Node: srfi streams ack734686
+Node: srfi streams references735090
+Node: srfi eager-comp740422
+Node: srfi eager-comp license741134
+Node: srfi eager-comp abstract742406
+Node: srfi eager-comp rationale746008
+Node: srfi eager-comp spec748433
+Node: srfi eager-comp spec comprehensions750180
+Node: srfi eager-comp spec qualifiers758141
+Node: srfi eager-comp spec generators760268
+Node: srfi eager-comp spec suggest778243
+Node: srfi eager-comp design782517
+Node: srfi eager-comp ack797743
+Node: srfi eager-comp references802420
+Node: srfi vectors805317
+Node: srfi vector license805917
+Node: srfi vector abstract807178
+Node: srfi vector rationale808076
+Node: srfi vector spec809245
+Node: srfi vector spec intro809773
+Node: srfi vector spec cons812446
+Node: srfi vector spec pred816554
+Node: srfi vector spec select819221
+Node: srfi vector spec iter820197
+Node: srfi vector spec search825151
+Node: srfi vector spec mutators828612
+Node: srfi vector spec conv830415
+Node: srfi vector ack831228
+Node: srfi vector references832073
+Node: srfi lazy833270
+Node: srfi lazy abstract833913
+Node: srfi lazy rationale835813
+Node: srfi lazy spec843686
+Node: srfi lazy usage846667
+Node: srfi lazy refs848078
+Node: srfi lazy copyright848772
+Node: srfi intermediate-format849995
+Node: srfi intermediate-format abstract850684
+Node: srfi intermediate-format issue851272
+Node: srfi intermediate-format rationale852525
+Node: srfi intermediate-format spec853596
+Node: srfi intermediate-format examples859936
+Node: srfi intermediate-format copyright861386
+Node: srfi general-cond862659
+Node: srfi general-cond license863249
+Node: srfi general-cond abstract864527
+Node: srfi general-cond rationale864931
+Node: srfi general-cond spec865810
+Node: srfi testing867798
+Node: srfi testing abstract868316
+Node: srfi testing rationale868834
+Node: srfi testing spec870931
+Node: srfi testing spec basic871693
+Node: srfi testing spec advanced880882
+Node: srfi testing spec runner884696
+Node: srfi testing spec results887626
+Node: srfi testing spec writing891730
+Node: srfi testing copyright898738
+Node: srfi compare-procedures899947
+Node: srfi compare-procedures copyright902440
+Node: srfi compare-procedures abstract903707
+Node: srfi compare-procedures intro905429
+Node: srfi compare-procedures conv911107
+Node: srfi compare-procedures spec912393
+Node: srfi compare-procedures spec atom913147
+Node: srfi compare-procedures spec seq917273
+Node: srfi compare-procedures spec pair920103
+Node: srfi compare-procedures spec def922018
+Node: srfi compare-procedures spec const923837
+Node: srfi compare-procedures spec using928485
+Node: srfi compare-procedures design941238
+Node: srfi compare-procedures related970510
+Node: srfi compare-procedures refs973365
+Node: srfi hash-tables975891
+Node: srfi hash-tables abstract976505
+Node: srfi hash-tables issues977617
+Node: srfi hash-tables rationale979035
+Node: srfi hash-tables spec980697
+Node: srfi hash-tables spec names981262
+Node: srfi hash-tables spec type982985
+Ref: srfi hash-tables spec type-Footnote-1985426
+Node: srfi hash-tables spec queries985579
+Node: srfi hash-tables spec single986035
+Node: srfi hash-tables spec whole989144
+Node: srfi hash-tables spec hashing992414
+Node: srfi hash-tables copyright994831
+Node: srfi lightweight-testing996075
+Node: srfi lightweight-testing license996744
+Node: srfi lightweight-testing abstract998048
+Node: srfi lightweight-testing rationale1000172
+Node: srfi lightweight-testing spec1003457
+Node: srfi lightweight-testing references1007302
+Node: srfi environment-variables1008075
+Node: srfi environment-variables license1008814
+Node: srfi environment-variables abstract1010125
+Node: srfi environment-variables rationale1010580
+Node: srfi environment-variables spec1012457
+Node: srfi environment-variables issues1013810
+Node: srfi environment-variables ack1014926
+Node: srfi err5rs records1015242
+Node: srfi err5rs records abstract1015931
+Node: srfi err5rs records rationale1016789
+Node: srfi err5rs records spec1033534
+Node: srfi err5rs records spec proc1035183
+Node: srfi err5rs records spec insp1041887
+Node: srfi err5rs records spec synt1043943
+Node: srfi err5rs records spec iden1047794
+Node: srfi err5rs records examples1048924
+Node: srfi err5rs records ack1053262
+Node: srfi err5rs records copyright1053734
+Node: srfi ralists1055027
+Node: srfi ralists abstract1055928
+Node: srfi ralists issues1056747
+Node: srfi ralists rationale1058185
+Node: srfi ralists spec1060021
+Node: srfi ralists spec random1060385
+Node: srfi ralists spec repre1074955
+Node: srfi ralists spec requir1075870
+Node: srfi ralists refs1077623
+Node: srfi ralists ack1078531
+Node: srfi ralists copyright1079683
+Node: srfi basic-socket1080952
+Node: srfi basic-socket abstract1081579
+Node: srfi basic-socket rationale1081783
+Node: srfi basic-socket spec1082402
+Node: srfi basic-socket spec intro1083012
+Node: srfi basic-socket spec cons1084670
+Node: srfi basic-socket spec ops1087434
+Node: srfi basic-socket spec port1089578
+Node: srfi basic-socket spec control1091533
+Node: srfi basic-socket spec flag1092136
+Node: srfi basic-socket spec const1095341
+Node: srfi basic-socket examples1098052
+Node: srfi basic-socket refs1100522
+Node: srfi basic-socket copyright1100828
+Node: srfi boxes1102091
+Node: srfi boxes abstract1102600
+Node: srfi boxes rationale1102898
+Node: srfi boxes spec1105032
+Node: srfi boxes copyright1106968
+Node: srfi env-inquiry1108186
+Node: srfi env-inquiry abstract1108758
+Node: srfi env-inquiry rationale1109186
+Node: srfi env-inquiry spec1110940
+Node: srfi env-inquiry impl1114385
+Node: srfi env-inquiry copyright1116383
+Node: srfi sets-and-bags1117619
+Node: srfi sets-and-bags intro1118876
+Node: srfi sets-and-bags constr1123368
+Node: srfi sets-and-bags preds1125649
+Node: srfi sets-and-bags access1126421
+Node: srfi sets-and-bags update1127040
+Node: srfi sets-and-bags whole1136308
+Node: srfi sets-and-bags map1137931
+Node: srfi sets-and-bags copy1143092
+Node: srfi sets-and-bags subsets1145662
+Node: srfi sets-and-bags theory1148324
+Node: srfi sets-and-bags bag1151393
+Node: srfi sets-and-bags compar1157260
+Node: srfi sets-and-bags copyright1158885
+Node: srfi comparators1160131
+Node: srfi comparators abstract1161694
+Node: srfi comparators rationale1162235
+Node: srfi comparators definitions1163354
+Node: srfi comparators limitations1165602
+Node: srfi comparators predicates1166094
+Node: srfi comparators standard1166678
+Node: srfi comparators default1179581
+Node: srfi comparators constructors1185746
+Node: srfi comparators constructors general1186941
+Node: srfi comparators constructors real1187902
+Node: srfi comparators constructors pair1194815
+Node: srfi comparators constructors list1199016
+Node: srfi comparators constructors vector1205783
+Node: srfi comparators constructors bytevec1207843
+Node: srfi comparators constructors select1210028
+Node: srfi comparators constructors refine1213787
+Node: srfi comparators constructors reverse1217735
+Node: srfi comparators constructors debug1219159
+Node: srfi comparators wrapped1219951
+Node: srfi comparators accessors1220669
+Node: srfi comparators applicators1222224
+Node: srfi comparators compar proc1223469
+Node: srfi comparators syntax1225373
+Node: srfi comparators compar pred1229560
+Node: srfi comparators ternary1234922
+Node: srfi comparators minmax1240501
+Node: srfi comparators misc1241683
+Node: srfi comparators conditions1242102
+Node: srfi comparators copyright1248946
+Node: srfi regexps1250190
+Node: srfi regexps license1251033
+Node: srfi regexps abstract1252291
+Node: srfi regexps rationale1252655
+Node: srfi regexps conventions1253953
+Node: srfi regexps compatibility1255351
+Node: srfi regexps procs1257455
+Node: srfi regexps syntax1269291
+Node: srfi regexps syntax summary1270006
+Node: srfi regexps syntax basic1274648
+Node: srfi regexps syntax repeating1279564
+Node: srfi regexps syntax submatch1281796
+Node: srfi regexps syntax charsets1282647
+Node: srfi regexps syntax named1286392
+Node: srfi regexps syntax boundary1289543
+Node: srfi regexps syntax nongreed1293706
+Node: srfi regexps syntax look1294430
+Node: srfi regexps vicare1295570
+Node: srfi regexps references1296287
+Node: srfi ilists1297868
+Node: srfi ilists license1298633
+Node: srfi ilists abstract1299888
+Node: srfi ilists rationale1300661
+Node: srfi ilists discussion1303467
+Node: srfi ilists quotation1306817
+Node: srfi ilists procs1314282
+Node: srfi ilists procs conventions1315449
+Node: srfi ilists procs constructors1316340
+Node: srfi ilists procs predicates1318959
+Node: srfi ilists procs selectors1322940
+Node: srfi ilists procs misc1328462
+Node: srfi ilists procs fold1333661
+Node: srfi ilists procs filter1346905
+Node: srfi ilists procs searching1348807
+Node: srfi ilists procs deletion1358958
+Node: srfi ilists procs alists1362121
+Node: srfi ilists procs replacement1365725
+Node: srfi ilists procs conversion1366361
+Node: srfi ilists procs apply1368730
+Node: srfi ilists procs comparators1369310
+Node: srfi ilists procs iterthunks1371763
+Node: srfi ilists ack1372565
+Node: srfi ilists references1372979
+Node: platform1373499
+Node: platform constants1373958
+Node: platform features1374263
+Node: platform utilities1374681
+Node: errno1375914
+Node: words1377687
+Node: words syntaxes1378438
+Node: words sizeof1379163
+Node: words predicates1380539
+Node: words sign1384630
+Node: words limits1388597
+Node: posix1396369
+Node: posix conventions1400080
+Node: posix conditions1401625
+Node: posix cond-expand1402857
+Node: posix env1404231
+Node: posix pid1406756
+Node: posix process1407074
+Node: posix process system1407432
+Node: posix process fork1408134
+Node: posix process fork fork1408668
+Node: posix process fork fds1410804
+Node: posix process fork binary1417009
+Node: posix process fork textual1425202
+Node: posix process exec1433057
+Node: posix status1438158
+Node: posix signal1441246
+Node: posix stat1450142
+Node: posix file1454987
+Node: posix link1458817
+Node: posix dir1461207
+Node: posix fd1466911
+Node: posix fd open1467801
+Node: posix fd read1468823
+Node: posix fd write1469728
+Node: posix fd seek1470718
+Node: posix fd scatter1471313
+Node: posix fd select1472206
+Node: posix fd select fdset1472652
+Node: posix fd select select1477578
+Node: posix fd select special1481189
+Node: posix fd poll1483079
+Node: posix fd device1484526
+Node: posix fd device blocking1485823
+Node: posix fd device cloexec1486691
+Node: posix fd dup1492560
+Node: posix fd pipe1493445
+Node: posix fd fifo1494240
+Node: posix fd trunc1494698
+Node: posix fd lock1495589
+Node: posix mmap1496228
+Node: posix socket1499483
+Node: posix socket addresses1502484
+Node: posix socket addresses local1502938
+Node: posix socket addresses in1504209
+Node: posix socket addresses in61506948
+Node: posix socket addresses rep1508589
+Node: posix socket addresses info1511377
+Node: posix socket hosts1514422
+Node: posix socket protocols1517799
+Node: posix socket services1520234
+Node: posix socket networks1523135
+Node: posix socket socket1525806
+Node: posix socket misc1538516
+Node: posix socket examples1540497
+Node: posix socket oob1545901
+Node: posix users1549314
+Node: posix job1556016
+Node: posix time1558590
+Node: posix time timeval1559179
+Node: posix time timespec1560009
+Node: posix time tms1560874
+Node: posix time tm1561796
+Node: posix time itimerval1563274
+Node: posix time itimerspec1564555
+Node: posix time functions1566112
+Node: posix timers1572890
+Node: posix config1578391
+Node: posix resources1581412
+Node: posix resources rlimit1581753
+Node: posix resources rusage1582900
+Node: posix resources funcs1587090
+Node: posix mq1589383
+Node: posix mq attr1589931
+Node: posix mq api1591413
+Node: posix mq examples1598979
+Node: posix shm1602458
+Node: posix sem1606588
+Node: posix sem api1607047
+Node: posix sem examples1612442
+Node: posix misc1620048
+Node: posix args1620823
+Node: posix not1621576
+Node: posix sel1622182
+Node: posix pid-files1626883
+Node: posix pid-files intro1627781
+Node: posix pid-files config1629209
+Node: posix pid-files api1631008
+Node: posix pid-files conditions1634166
+Node: posix lock-pid-files1637740
+Node: posix lock-pid-files intro1638266
+Node: posix lock-pid-files api1639637
+Node: posix lock-pid-files cond1640710
+Node: posix log-files1642973
+Node: posix log-files config1643574
+Node: posix log-files api1644871
+Node: posix daemonisations1647861
+Node: posix tcp-server-sockets1650130
+Node: posix sendmail1652548
+Node: posix mailx1654229
+Node: posix curl1655977
+Node: posix wget1657607
+Node: posix find1659135
+Node: glibc1661266
+Node: glibc cond-expand1663346
+Node: glibc env1664473
+Node: glibc dir1664927
+Node: glibc temp1665498
+Node: glibc sync1666518
+Node: glibc socket1667560
+Node: glibc net1669563
+Node: glibc math1671946
+Node: glibc random1675083
+Node: glibc match1675804
+Node: glibc word1683689
+Node: iconv1685236
+Node: iconv set1686097
+Node: iconv conv1687776
+Node: linux1690994
+Node: linux cond-expand1693321
+Node: linux env1694355
+Node: linux status1694812
+Node: linux resources1696397
+Node: linux epoll1697848
+Node: linux signalfd1702913
+Node: linux timerfd1708030
+Node: linux timerfd intro1708769
+Node: linux timerfd api1709626
+Node: linux timerfd examples1712532
+Node: linux inotify1715723
+Node: linux daemonisation1720932
+Node: linux ether1721578
+Node: args1726283
+Node: args config1726968
+Node: args definitions1728124
+Node: args using1728882
+Node: args forms1732316
+Node: args predefined1732797
+Node: args predefined pairs1735166
+Node: args predefined booleans1735601
+Node: args predefined numbers1735974
+Node: args predefined fixnums1736345
+Node: args predefined exact integers1738221
+Node: args predefined keywords1739715
+Node: args predefined promises1740150
+Node: args predefined bits1740736
+Node: args predefined signed int1744392
+Node: args predefined clang1746060
+Node: args predefined chars1749540
+Node: args predefined strings1750213
+Node: args predefined vectors1752915
+Node: args predefined bytevectors1754972
+Node: args predefined pathnames1757334
+Node: args predefined symbols1758690
+Node: args predefined enum-sets1759232
+Node: args predefined pointers1759679
+Node: args predefined memory-blocks1760414
+Node: args predefined flonums1760905
+Node: args predefined bignums1761283
+Node: args predefined ratnums1761655
+Node: args predefined reals1762025
+Node: args predefined compnums1762517
+Node: args predefined cflonums1762893
+Node: args predefined complexes1763273
+Node: args predefined ports1763652
+Node: args predefined transcoders1764853
+Node: args predefined procedures1765330
+Node: args predefined genstrings1765790
+Node: args predefined genbuffers1766987
+Node: args predefined time1768773
+Node: args predefined identifier1769352
+Node: cbuffers1769944
+Node: cbuffers buffers1770670
+Node: cbuffers strings1772623
+Node: cbuffers api1775172
+Node: readline1780693
+Node: parser logic1781589
+Node: parser logic intro1782192
+Node: parser logic operators1790352
+Node: parser logic api1797318
+Node: gcc1811104
+Node: flonum format1814018
+Node: flonum parser1815893
+Node: debugging1817971
+Node: debugging compiler1818189
+Node: getopts1818420
+Node: getopts intro1819289
+Node: getopts types1821700
+Node: getopts config1824686
+Node: getopts parser1825971
+Node: getopts conditions1828625
+Node: checks1833769
+Node: checks select1834736
+Node: checks eval1836019
+Node: checks result1841856
+Node: checks output1842630
+Node: tracing1843532
+Node: multimethods1847328
+Node: multimethods examples1848902
+Node: multimethods application1851843
+Ref: multimethods application-Footnote-11860628
+Node: multimethods dispatching1860752
+Node: multimethods definers1862300
+Node: multimethods defining1865791
+Node: multimethods methods1868934
+Node: multimethods next1872312
+Ref: multimethods next-Footnote-11873036
+Node: multimethods predefined1873590
+Node: net channels1874030
+Node: net channels ann1875266
+Node: net channels channels1875814
+Node: net channels channels channel1876506
+Node: net channels channels bichannel1878813
+Node: net channels channels bochannel1883434
+Node: net channels channels biochannel1886383
+Node: net channels channels tichannel1887023
+Node: net channels channels tochannel1891656
+Node: net channels channels tiochannel1894613
+Node: net channels ifaces1895223
+Node: net channels ifaces channel1895913
+Node: net channels ifaces bichannel1898271
+Node: net channels ifaces bochannel1902339
+Node: net channels ifaces tichannel1905070
+Node: net channels ifaces tochannel1909131
+Node: net channels conditions1911832
+Node: comparators1912849
+Node: iteration thunks1913384
+Node: iteration thunks common1914162
+Node: iteration thunks folding1916342
+Node: iteration thunks mapping1917649
+Node: iteration thunks searching1920132
+Node: iteration thunks filtering1923693
+Node: lists1926105
+Node: lists intro1928105
+Node: lists conventions1933010
+Node: lists cons1934311
+Node: lists pred1936539
+Node: lists compar1937778
+Node: lists select1939443
+Node: lists misc1943841
+Node: lists fold1949712
+Node: lists fold examples1950463
+Node: lists fold rnrs1955188
+Node: lists fold traditional1956602
+Node: lists fold derived1957770
+Node: lists fold pair1959014
+Node: lists fold reduce1961675
+Node: lists fold unfold1963740
+Node: lists fold map1969443
+Node: lists fold foreach1973661
+Node: lists filter1976121
+Node: lists search1978514
+Node: lists delete1987781
+Node: lists sorted1990495
+Node: lists alist1992606
+Node: lists circ1995729
+Node: lists set1997350
+Node: lists low2005747
+Node: vectors2013413
+Node: vectors intro2014979
+Node: vectors convention2016467
+Node: vectors views2019719
+Node: vectors cons2023312
+Node: vectors pred2025055
+Node: vectors compar2026605
+Node: vectors fold2030382
+Node: vectors fold rnrs2030758
+Node: vectors fold sub2036501
+Node: vectors fold unfold2037990
+Node: vectors fold map2044212
+Node: vectors select2048510
+Node: vectors pad2050547
+Node: vectors prefix2052108
+Node: vectors search2053334
+Node: vectors filter2055438
+Node: vectors list2056074
+Node: vectors replicate2056881
+Node: vectors mutate2059877
+Node: vectors misc2060280
+Node: strings2060971
+Node: strings intro2062697
+Node: strings convention2065334
+Node: strings views2069268
+Node: strings cons2073015
+Node: strings pred2074439
+Node: strings compar2076084
+Node: strings compar lexi2076578
+Node: strings compar dict2082222
+Node: strings compar number2084715
+Node: strings compar dictnumber2087882
+Node: strings map2090831
+Node: strings case2093654
+Node: strings fold2095259
+Node: strings select2107030
+Node: strings pad2109584
+Node: strings prefix2111479
+Node: strings search2113167
+Node: strings filter2116204
+Node: strings list2117413
+Node: strings replicate2121033
+Node: strings mutate2123419
+Node: strings misc2123827
+Node: strings rabin-karp2125642
+Node: char-sets2127379
+Node: char-sets conv2128142
+Node: char-sets make2128992
+Node: char-sets pred2130852
+Node: char-sets inspect2133050
+Node: char-sets ops2134473
+Node: char-sets sets2140640
+Node: char-sets sets intro2141376
+Ref: char-sets sets intro-Footnote-12142922
+Ref: char-sets sets intro-Footnote-22142966
+Ref: char-sets sets intro-Footnote-32143011
+Ref: char-sets sets intro-Footnote-42143055
+Node: char-sets sets how2143099
+Node: char-sets sets basic2147946
+Node: char-sets sets ascii2148393
+Node: char-sets sets blocks2151727
+Node: char-sets sets categories2160717
+Node: bytevectors2162992
+Node: bytevectors utils2163307
+Node: bytevectors utils setget2163725
+Node: bytevectors utils scaled2169098
+Node: bytevectors 82174306
+Node: bytevectors 8 intro2176221
+Node: bytevectors 8 convention2177627
+Node: bytevectors 8 views2182106
+Node: bytevectors 8 cons2185637
+Node: bytevectors 8 pred2187667
+Node: bytevectors 8 compar2189769
+Node: bytevectors 8 compar lexi2190321
+Node: bytevectors 8 compar dict2195952
+Node: bytevectors 8 compar number2200163
+Node: bytevectors 8 compar dictnumber2204849
+Node: bytevectors 8 map2209427
+Node: bytevectors 8 case2213065
+Node: bytevectors 8 fold2214792
+Node: bytevectors 8 select2221113
+Node: bytevectors 8 pad2224856
+Node: bytevectors 8 prefix2227670
+Node: bytevectors 8 search2230498
+Node: bytevectors 8 filter2234037
+Node: bytevectors 8 list2235810
+Node: bytevectors 8 replicate2239035
+Node: bytevectors 8 mutate2241005
+Node: bytevectors 8 misc2241599
+Node: bytevector compounds2242643
+Node: bytevector compounds types2243329
+Node: bytevector compounds inspect2244511
+Node: bytevector compounds queue2245607
+Node: bytevector compounds access2246204
+Node: kmp2246875
+Node: kmp intro2248762
+Node: kmp conv2251649
+Node: kmp vector2253026
+Node: kmp step2253760
+Node: kmp partial2257416
+Node: kmp full2261158
+Node: levenshtein2262276
+Node: levenshtein basic2263529
+Node: levenshtein coerce2265910
+Node: wtables2267011
+Node: object-properties2271611
+Node: one-dimension2273177
+Node: one-dimension intro2274518
+Node: one-dimension make2281161
+Node: one-dimension pred2282983
+Node: one-dimension inspect2286068
+Node: one-dimension ops2286403
+Node: arrays2292138
+Node: arrays coordinates2292544
+Node: arrays positions2293675
+Node: arrays shapes2297065
+Node: arrays arrays2297210
+Node: arrays misc2297338
+Node: chains2297795
+Node: chains intro2298772
+Node: chains objects2299781
+Node: chains inspection2302731
+Node: chains access2303917
+Node: chains ops2308667
+Node: chains folding2309922
+Node: chains mapping2313114
+Node: chains searching2314494
+Node: chains filtering2317287
+Node: chains conversion2318484
+Node: chains sort2319269
+Node: chains iteration thunks2320282
+Node: stacks2322189
+Node: stacks objects2323044
+Node: stacks inspection2325615
+Node: stacks access2326432
+Node: stacks folding2327410
+Node: stacks mapping2328629
+Node: stacks searching2330751
+Node: stacks filtering2333936
+Node: stacks conversion2335331
+Node: stacks iteration thunks2336600
+Node: stacks misc2337757
+Node: queues2339044
+Node: queues objects2339912
+Node: queues inspection2342522
+Node: queues access2343339
+Node: queues folding2344494
+Node: queues mapping2345713
+Node: queues searching2347835
+Node: queues filtering2351022
+Node: queues conversion2352415
+Node: queues iteration thunks2353760
+Node: queues misc2354917
+Node: deques2356213
+Node: deques objects2357127
+Node: deques inspection2359737
+Node: deques access2360554
+Node: deques folding2362048
+Node: deques mapping2363267
+Node: deques searching2365389
+Node: deques filtering2368576
+Node: deques conversion2369969
+Node: deques iteration thunks2371314
+Node: deques misc2373125
+Node: binary heaps2374421
+Node: binary heaps objects2375006
+Node: binary heaps inspection2377462
+Node: binary heaps access2378319
+Node: binary heaps sorting2379467
+Node: binary heaps iterthunks2380107
+Node: binary heaps misc2381441
+Node: dynamic arrays2383257
+Node: dynamic arrays objects2384383
+Node: dynamic arrays inspection2387801
+Node: dynamic arrays access2388867
+Node: dynamic arrays folding2392263
+Node: dynamic arrays mapping2393597
+Node: dynamic arrays searching2396054
+Node: dynamic arrays filtering2399545
+Node: dynamic arrays conversion2402688
+Node: dynamic arrays misc2404243
+Node: dynamic arrays sort2405659
+Node: dynamic arrays iterthunks2407212
+Node: bst2409166
+Node: bst intro2409618
+Node: bst bnodes2413914
+Node: bst bnodes objects2414669
+Node: bst bnodes access2416167
+Node: bst bnodes pred2418957
+Node: bst bnodes inspect2420394
+Node: bst bnodes searching2421294
+Node: bst bnodes iterating2425573
+Node: bst bnodes iterating in-order2426159
+Node: bst bnodes iterating pre-order2430534
+Node: bst bnodes iterating post-order2434018
+Node: bst bnodes iterating level-order2437401
+Node: bst bnodes iterating breadth-first2441189
+Node: bst bnodes iterating thunks2445362
+Node: bst bnodes validating2448588
+Node: bst unodes2449696
+Node: bst unodes objects2450190
+Node: bst unodes ops2451330
+Node: sets bags2453410
+Node: bitvectors2453963
+Node: bitvectors type2454413
+Node: bitvectors inspection2455334
+Node: bitvectors bits2455692
+Node: bitvectors conv2458023
+Node: ilists2459233
+Node: ralists2460001
+Node: istacks2460621
+Node: istacks common2461569
+Node: istacks lists2463892
+Node: istacks ilists2465305
+Node: istacks ralists2466849
+Node: istacks stacks2468432
+Node: istacks deques2469781
+Node: istacks chains2471107
+Node: istacks dynamic arrays2472597
+Node: iqueues2474042
+Node: iqueues common2474887
+Node: iqueues queues2477283
+Node: iqueues deques2478627
+Node: iqueues chains2479953
+Node: iqueues dynamic arrays2481705
+Node: ideques2483150
+Node: ideques common2483877
+Node: ideques deques2487260
+Node: ideques chains2488679
+Node: ideques dynamic arrays2490453
+Node: random2491920
+Node: random intro2492812
+Node: random prng2494666
+Ref: random prng-Footnote-12495685
+Node: random prng lcg2495860
+Ref: random prng lcg-Footnote-12497216
+Node: random prng mwc2497399
+Ref: random prng mwc-Footnote-12499611
+Node: random prng csprng2499775
+Ref: random prng csprng-Footnote-12500473
+Node: random prng integers2500710
+Node: random prng reals2504231
+Node: random numbers2506620
+Node: random source2507619
+Node: random mrg32k3a2511890
+Node: random device2514071
+Ref: random device-Footnote-12516686
+Node: random utils2516770
+Node: random utils misc2517168
+Node: random utils lists2519344
+Node: random utils vectors2520488
+Node: random utils strings2523263
+Node: random generators2525754
+Node: random generators mersenne2526219
+Ref: random generators mersenne-Footnote-12527924
+Node: random generators marsaglia2528112
+Node: random generators bbs2540173
+Node: random generators borosh2543386
+Node: random generators cmrg2544639
+Ref: random generators cmrg-Footnote-12546579
+Node: random dist2546806
+Node: irregex2547525
+Ref: irregex-Footnote-12548950
+Node: irregex conventions2549010
+Node: irregex pred2549954
+Node: irregex compile2550487
+Node: irregex match2552055
+Node: irregex replace2554853
+Node: irregex chunk2555736
+Node: irregex misc2560785
+Node: irregex pcre2563267
+Ref: irregex pcre-Footnote-12566094
+Node: irregex sre2566171
+Node: irregex sre syntax2566778
+Node: irregex sre basic2569970
+Node: irregex sre repetition2571710
+Node: irregex sre char-sets2575115
+Node: irregex sre assertion2576938
+Node: irregex sre utility2578598
+Node: pregexp2581159
+Node: pregexp intro2582176
+Ref: pregexp intro-Footnote-12584077
+Node: pregexp api2584541
+Node: pregexp syntax2589362
+Node: pregexp syntax basic2589999
+Node: pregexp syntax chars2591135
+Ref: pregexp syntax chars-Footnote-12596138
+Ref: pregexp syntax chars-Footnote-22596303
+Node: pregexp syntax quantifiers2596464
+Node: pregexp syntax clusters2598739
+Ref: pregexp syntax clusters-Footnote-12605055
+Ref: pregexp syntax clusters-Footnote-22605226
+Node: pregexp syntax alternation2605297
+Node: pregexp syntax backtrack2607239
+Node: pregexp syntax look2609359
+Node: pregexp example2611524
+Ref: pregexp example-Footnote-12614228
+Ref: pregexp example-Footnote-22614316
+Node: formations2614549
+Node: formations output2615977
+Ref: formations output-Footnote-12619665
+Node: formations escape generic2619815
+Node: formations escape char2622480
+Node: formations escape case2623335
+Node: formations escape integers2624386
+Node: formations escape flonums2627043
+Node: formations escape complex2632644
+Node: formations escape args2633612
+Node: formations escape lines2640659
+Node: formations escape columns2642891
+Node: formations escape misc2645816
+Node: silex2647405
+Node: silex example2648958
+Node: silex tables2653058
+Node: silex input2660255
+Node: silex lexer2666477
+Node: silex syntax2668843
+Node: silex syntax macros2670552
+Node: silex syntax includes2671686
+Node: silex syntax rules2673273
+Node: silex syntax regexp atomic2674301
+Node: silex syntax regexp compose2677430
+Node: silex syntax regexp marker2679527
+Node: silex syntax regexp space2680804
+Node: silex syntax sample2681193
+Node: silex semantics2683146
+Node: silex semantics action2683731
+Node: silex semantics rules2687696
+Node: silex format2694355
+Node: silex utilities2696365
+Node: parser-tools2696829
+Node: parser-tools unix-pathnames2697050
+Node: parser-tools unix-pathnames grammar2697989
+Node: parser-tools unix-pathnames errors2698797
+Node: parser-tools unix-pathnames preds2702308
+Node: parser-tools unix-pathnames conv2705116
+Node: parser-tools unix-pathnames parser2707235
+Node: parser-tools unix-pathnames manip2710241
+Node: parser-tools unix-pathnames comp2712183
+Node: Package License2732696
+Node: concept index2770259
+Node: function index2830314
+Node: variable index3436296
+Node: type index3474459
+
+End Tag Table

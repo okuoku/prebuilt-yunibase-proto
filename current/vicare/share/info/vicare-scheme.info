@@ -1,0 +1,1133 @@
+This is vicare-scheme.info, produced by makeinfo version 6.5 from
+vicare-scheme.texi.
+
+This document describes version 0.4.1-devel.3 of Vicare Scheme, an R6RS
+compliant native compiler for the Scheme language, producing single
+threaded programs running on Intel x86 32-bit and 64-bit processors.
+_Vicare_ is pronounced the etruscan way.
+
+   The package, including its documentation, is distributed under the
+terms of the GNU General Public License (GPL) and can be downloaded
+from:
+
+      <https://bitbucket.org/marcomaggi/vicare-scheme/downloads>
+
+the home page of the project is at:
+
+               <http://marcomaggi.github.io/vicare.html>
+
+development takes place at:
+
+                <http://github.com/marcomaggi/vicare/>
+
+and, as a backup, at:
+
+           <https://bitbucket.org/marcomaggi/vicare-scheme/>
+
+Copyright (C) 2010-2017 by Marco Maggi.
+Copyright (C) 2006-2010 by Abdulaziz Ghuloum.
+Copyright (C) Michael Sperber, R. Kent Dybvig, Matthew Flatt and Anton
+Van Straaten.
+
+   This document is derived from the original Ikarus documentation by
+the Vicare Scheme contributors, see the "History" appendix for details.
+
+   The documentation of IrRegex is Copyright (C) 2005-2012 Alex Shinn.
+All rights reserved.
+
+   The documentation of Pregexp is Copyright (C) 1999-2005 Dorai
+Sitaram.  All rights reserved.
+
+   The documentation of the library '(vicare formations)' is derived
+from the documentation of Guile.  Copyright (C) 1996-2005, 2009-2013
+Free Software Foundation.
+
+     This program is free software: you can redistribute it and/or
+     modify it under the terms of the GNU General Public License version
+     3 as published by the Free Software Foundation.
+
+     This program is distributed in the hope that it will be useful, but
+     WITHOUT ANY WARRANTY; without even the implied warranty of
+     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+     General Public License for more details.
+
+     You should have received a copy of the GNU General Public License
+     along with this program.  If not, see
+     <http://www.gnu.org/licenses/>.
+
+   Trademarks used herein are the property of their respective owners.
+INFO-DIR-SECTION Development
+START-INFO-DIR-ENTRY
+* vicare-scheme: (vicare-scheme).  Vicare Scheme.
+END-INFO-DIR-ENTRY
+
+
+Indirect:
+vicare-scheme.info-1: 2275
+vicare-scheme.info-2: 304186
+vicare-scheme.info-3: 605629
+vicare-scheme.info-4: 902576
+vicare-scheme.info-5: 1202439
+vicare-scheme.info-6: 1507900
+vicare-scheme.info-7: 1809835
+vicare-scheme.info-8: 2103232
+vicare-scheme.info-9: 2410565
+vicare-scheme.info-10: 2940331
+
+Tag Table:
+(Indirect)
+Node: Top2275
+Node: overview6835
+Node: overview original8471
+Node: overview tech8980
+Node: overview resources10314
+Node: overview system11384
+Node: overview system hardware11860
+Node: overview system software12483
+Node: overview install15025
+Node: overview install quick16330
+Node: overview install prerequisites17482
+Node: overview install details18408
+Ref: overview install details-Footnote-124571
+Node: overview install uninstall25079
+Node: overview restrictions25442
+Node: overview extensions27480
+Node: overview repl31294
+Node: overview foreign32062
+Node: overview foreign readline32809
+Node: using33602
+Node: using interactive34212
+Node: using invoking34781
+Node: using scripts49910
+Node: using libraries53100
+Node: using libraries intro53972
+Node: using libraries filenames55655
+Node: using libraries paths59502
+Node: using libraries searching61015
+Node: using libraries compiling61889
+Node: using libraries compiling lib62269
+Node: using libraries compiling deps65353
+Node: using libraries examples67531
+Node: using programs68898
+Node: using rlwrap70820
+Node: scheme72851
+Node: scheme overview73562
+Node: scheme overview intro74484
+Node: scheme overview overview79760
+Node: scheme overview basic types83418
+Node: scheme overview expressions86022
+Node: scheme overview variables87796
+Node: scheme overview definitions88739
+Node: scheme overview forms90025
+Node: scheme overview procedures90675
+Node: scheme overview syntax92472
+Node: scheme overview assignment94070
+Node: scheme overview macros94988
+Node: scheme overview data96705
+Node: scheme overview continuations98609
+Node: scheme overview libraries100617
+Node: scheme overview programs101439
+Node: scheme requirements102724
+Node: scheme numbers104627
+Node: scheme numbers tower105775
+Node: scheme numbers exactness106999
+Node: scheme numbers fix flo108912
+Node: scheme numbers requirements109598
+Node: scheme numbers inf nan112377
+Node: scheme numbers minus zero113401
+Node: scheme lex113973
+Node: scheme lex intro114342
+Node: scheme lex notation117550
+Node: scheme lex syntax118423
+Node: scheme lex syntax formal account120124
+Node: scheme lex syntax line endings125475
+Node: scheme lex syntax whitespace and comments126219
+Node: scheme lex syntax identifiers128105
+Node: scheme lex syntax booleans129856
+Node: scheme lex syntax characters130147
+Node: scheme lex syntax strings132490
+Node: scheme lex syntax numbers134460
+Node: scheme lex datum139042
+Node: scheme lex datum formal account139794
+Node: scheme lex datum pairs and lists140774
+Node: scheme lex datum vectors142482
+Node: scheme lex datum bytevectors143094
+Node: scheme lex datum abbreviations143715
+Node: scheme basic145495
+Node: scheme basic programs and libraries146554
+Node: scheme basic variables keywords regions148028
+Node: scheme basic exceptions151318
+Node: scheme basic argument checking153914
+Node: scheme basic syntax violations156301
+Node: scheme basic safety157414
+Node: scheme basic boolean values158650
+Node: scheme basic multiple return values159175
+Node: scheme basic unspecified behavior160579
+Node: scheme basic storage model161160
+Node: scheme basic proper tail recursion163155
+Node: scheme basic dynamic extent164279
+Node: scheme entry165579
+Node: scheme entry syntax166676
+Node: scheme entry procedure168932
+Node: scheme entry implementation resp172400
+Node: scheme entry other kinds173592
+Node: scheme entry equivalent174488
+Node: scheme entry evaluation examples175024
+Node: scheme entry naming conventions176496
+Node: scheme library177722
+Node: scheme library form178350
+Node: scheme library form decl179146
+Node: scheme library form names180948
+Node: scheme library form export181599
+Node: scheme library form import182434
+Node: scheme library form version184231
+Node: scheme library form conflicts186806
+Node: scheme library form body188689
+Node: scheme library import export191949
+Node: scheme library examples198992
+Node: scheme programs202171
+Node: scheme programs syntax202778
+Node: scheme programs semantics203959
+Node: scheme syntax205044
+Node: scheme syntax primitive205810
+Node: scheme syntax macros208931
+Node: scheme expansion211326
+Node: scheme derived218468
+Node: baselib225963
+Node: baselib types227183
+Node: baselib definitions227858
+Node: baselib definitions variables228489
+Node: baselib definitions syntax230309
+Node: baselib bodies232200
+Node: baselib expressions233531
+Node: baselib expressions quotation234283
+Node: baselib expressions procedures235306
+Node: baselib expressions conditionals238070
+Node: baselib expressions assignments239760
+Node: baselib expressions derived cond240522
+Node: baselib expressions binding249304
+Node: baselib expressions sequencing259490
+Node: baselib predicates261032
+Node: baselib math271556
+Node: baselib math exactness272362
+Node: baselib math infinities274254
+Node: baselib math semantics275348
+Node: baselib math semantics integer275851
+Node: baselib math semantics trascend277342
+Node: baselib math ops279644
+Node: baselib math ops type pred280395
+Node: baselib math ops exactness286858
+Node: baselib math ops value pred288562
+Node: baselib math ops comparison291623
+Node: baselib math ops arithmetic292748
+Node: baselib math ops part298462
+Node: baselib math ops trascend304186
+Node: baselib math ops exponentiation305919
+Node: baselib math ops complex308109
+Node: baselib math string310452
+Node: baselib booleans313592
+Node: baselib lists314685
+Node: baselib symbols323581
+Node: baselib characters325245
+Node: baselib strings328086
+Node: baselib vectors332246
+Node: baselib errors336982
+Node: baselib control340097
+Ref: dynamic-wind345407
+Node: baselib iteration349187
+Node: baselib quasiquotation350351
+Node: baselib syntax binding355840
+Node: baselib transformers361099
+Node: baselib tail call376087
+Node: stdlib379430
+Node: stdlib unicode380476
+Node: stdlib unicode characters381118
+Node: stdlib unicode strings385825
+Node: stdlib bytevector389419
+Node: stdlib bytevector endianness391769
+Node: stdlib bytevector general392931
+Node: stdlib bytevector bytes and octets396666
+Node: stdlib bytevector integers398739
+Node: stdlib bytevector integers 16402470
+Node: stdlib bytevector integers 32404852
+Node: stdlib bytevector integers 64406845
+Node: stdlib bytevector flonum408886
+Node: stdlib bytevector strings410873
+Node: stdlib list417658
+Node: stdlib sorting433540
+Node: stdlib control436410
+Node: stdlib records444242
+Node: stdlib records intro444817
+Node: stdlib records mutability448686
+Node: stdlib records syntactic layer450099
+Node: stdlib records procedural layer468178
+Node: stdlib records inspection483640
+Node: stdlib exceptions486443
+Node: stdlib exceptions exceptions487360
+Ref: guard489736
+Node: stdlib exceptions conditions507281
+Node: stdlib exceptions conditions objects508191
+Node: stdlib exceptions conditions types515638
+Node: stdlib io522920
+Node: stdlib io conditions523766
+Node: stdlib io port529108
+Node: stdlib io port file names531267
+Node: stdlib io port file options531822
+Node: stdlib io port buffer modes534167
+Node: stdlib io port transcoders536077
+Node: stdlib io port eof object544197
+Node: stdlib io port io ports544872
+Node: stdlib io port input ports550227
+Node: stdlib io port binary input559777
+Node: stdlib io port textual input563463
+Node: stdlib io port output ports568534
+Node: stdlib io port binary output577852
+Node: stdlib io port textual output578797
+Node: stdlib io port input output ports580784
+Node: stdlib io simple583127
+Node: stdlib files588657
+Node: stdlib programlib589558
+Node: stdlib arithmetic590734
+Node: stdlib arithmetic bitwise591283
+Node: stdlib arithmetic fixnums591911
+Node: stdlib arithmetic flonums605629
+Node: stdlib arithmetic exact bitwise617013
+Node: stdlib syntax-case624654
+Node: stdlib syntax-case intro625969
+Node: stdlib syntax-case intro use626841
+Node: stdlib syntax-case intro unwrap628413
+Node: stdlib syntax-case intro ex630569
+Node: stdlib syntax-case intro more632309
+Node: stdlib syntax-case intro expand633958
+Node: stdlib syntax-case hygiene636645
+Node: stdlib syntax-case objects642264
+Node: stdlib syntax-case transformers643615
+Node: stdlib syntax-case parsing647914
+Node: stdlib syntax-case identifier660544
+Node: stdlib syntax-case conversion670152
+Node: stdlib syntax-case temporaries676252
+Node: stdlib syntax-case derived677961
+Node: stdlib syntax-case violations684242
+Node: stdlib syntax-case lisp686324
+Node: stdlib hashtable688510
+Node: stdlib hashtable constructors689811
+Node: stdlib hashtable procedures692305
+Node: stdlib hashtable inspection695983
+Node: stdlib hashtable hash functions696732
+Node: stdlib enum699059
+Node: stdlib complib707692
+Node: stdlib eval708279
+Node: stdlib mutable pairs710346
+Node: stdlib mutable strings711750
+Node: stdlib rfive compat713097
+Node: iklib719946
+Node: iklib libraries724039
+Node: iklib libraries options724321
+Node: iklib libraries foreign725233
+Node: iklib programs726141
+Node: iklib programs form726497
+Node: iklib programs options727600
+Node: iklib programs foreign728547
+Node: iklib runtime729421
+Node: iklib progname732384
+Node: iklib config732959
+Node: iklib cmdline734507
+Node: iklib env-inquiry734942
+Node: iklib syntaxes738122
+Node: iklib syntaxes libraries739821
+Node: iklib syntaxes lambdas740717
+Node: iklib syntaxes lambdas named741075
+Node: iklib syntaxes lambdas star741942
+Node: iklib syntaxes defines749053
+Node: iklib syntaxes defstxs754505
+Node: iklib syntaxes bindings756964
+Node: iklib syntaxes control759737
+Node: iklib syntaxes loops761118
+Node: iklib syntaxes loops while761881
+Node: iklib syntaxes loops until762495
+Node: iklib syntaxes loops for763143
+Node: iklib syntaxes loops do765230
+Node: iklib syntaxes loops do*766993
+Node: iklib syntaxes loops dolist767576
+Node: iklib syntaxes loops dotimes769110
+Node: iklib syntaxes loops fluids770008
+Node: iklib syntaxes returnable771676
+Node: iklib syntaxes blocking773285
+Node: iklib syntaxes dynenv774384
+Node: iklib syntaxes integrable776802
+Node: iklib syntaxes stale779326
+Node: iklib syntaxes body779909
+Node: iklib syntaxes try780559
+Node: iklib syntaxes splice1st787011
+Node: iklib syntaxes infix789836
+Node: iklib syntaxes infix syntax791256
+Node: iklib syntaxes infix prec797083
+Node: iklib syntaxes infix notes800162
+Node: iklib syntaxes increments801859
+Node: iklib syntaxes delimcc804125
+Node: iklib syntaxes misc804921
+Node: iklib syntaxes properties808605
+Node: iklib syntaxes expansion-of812009
+Node: iklib syntaxes optim-of814395
+Node: iklib syntaxes assembly-of818927
+Node: iklib unwind-protect820095
+Node: iklib unwind-protect intro822651
+Node: iklib unwind-protect syntaxes827550
+Node: iklib unwind-protect dynamic828917
+Node: iklib unwind-protect except 1833498
+Node: iklib unwind-protect except 2841917
+Node: iklib unwind-protect except 3843496
+Node: iklib unwind-protect loops845114
+Node: iklib unwind-protect returnable846584
+Node: iklib unwind-protect coroutines847383
+Node: iklib unwind-protect reenter849540
+Node: iklib unwind-protect dyn-env851637
+Node: iklib unwind-protect problems856386
+Node: iklib unwind-protect call/cc860478
+Node: iklib compensations864168
+Node: iklib compensations usage865190
+Node: iklib compensations api868458
+Node: iklib coroutines872080
+Node: iklib coroutines examples873121
+Node: iklib coroutines basic877115
+Node: iklib coroutines uid877975
+Node: iklib coroutines suspend878475
+Node: iklib coroutines syntaxes879311
+Node: iklib coroutines debug880146
+Node: iklib coroutines parallel880762
+Node: iklib conditions883074
+Node: iklib conditions core884530
+Node: iklib conditions raising884975
+Node: iklib conditions preds885865
+Node: iklib conditions spos886503
+Node: iklib conditions eagain888242
+Node: iklib conditions errno888864
+Node: iklib conditions failexpr889667
+Node: iklib conditions exprindex891157
+Node: iklib conditions procpre893244
+Node: iklib conditions procpost893993
+Node: iklib conditions procarg894759
+Node: iklib conditions sigarg895772
+Node: iklib conditions rvarg898265
+Node: iklib conditions proccon902576
+Node: iklib conditions exprret904051
+Node: iklib conditions non-reinst905100
+Ref: &non-reinstatable905334
+Node: iklib conditions late-bind905977
+Node: iklib conditions late-bind base906476
+Node: iklib conditions late-bind method907207
+Node: iklib conditions late-bind overload908025
+Node: iklib conditions string908894
+Node: iklib conditions string generic909446
+Node: iklib conditions string utf8910598
+Node: iklib conditions string utf16920957
+Node: iklib conditions string utf32927255
+Node: iklib conditions wfs930758
+Node: iklib conditions misc931456
+Node: iklib reader933019
+Node: iklib reader mode933568
+Node: iklib reader bv936286
+Node: iklib reader chars940250
+Node: iklib reader annotations941382
+Node: iklib reader misc943377
+Node: iklib reader extensions948098
+Node: iklib expander951108
+Node: iklib expander language951897
+Node: iklib expander transformers953466
+Node: iklib expander export specs954536
+Node: iklib expander import specs956587
+Node: iklib expander local import957896
+Node: iklib expander extended export961686
+Node: iklib expander fluids963098
+Node: iklib expander etv964502
+Node: iklib expander parameters968061
+Node: iklib expander synonym970678
+Node: iklib shared972430
+Node: iklib environment976113
+Node: iklib eval982410
+Node: iklib cafe983914
+Node: iklib records985437
+Node: iklib records defs986237
+Node: iklib records defs super-proto988570
+Node: iklib records defs destructor990228
+Node: iklib records defs consig992753
+Node: iklib records defs predicate994058
+Node: iklib records defs printer996062
+Node: iklib records defs equality996985
+Node: iklib records defs comparison999327
+Node: iklib records defs hash1000350
+Node: iklib records defs methods1002257
+Node: iklib records defs descriptors1002867
+Node: iklib records defs angular1003778
+Node: iklib records defs mixins1005374
+Node: iklib records defs implements1005936
+Node: iklib records predicates1008409
+Node: iklib records fields1009499
+Node: iklib records final1014584
+Node: iklib records printer1020104
+Node: iklib records equality1025076
+Node: iklib records comparison1026079
+Node: iklib records hash1027168
+Node: iklib records rcd1028289
+Node: iklib records misc1028902
+Node: iklib promises1031539
+Node: iklib booleans1031890
+Node: iklib chars1033216
+Node: iklib chars predicates1033597
+Node: iklib chars comparison1034489
+Node: iklib chars unicode1035255
+Node: iklib chars unicode intro1035939
+Node: iklib chars unicode utf81038406
+Node: iklib chars unicode utf161047537
+Node: iklib chars unicode utf321051387
+Node: iklib chars unicode ascii1053033
+Node: iklib chars unicode latin11054312
+Node: iklib keywords1057972
+Node: iklib ipairs1059661
+Node: iklib lists1060539
+Node: iklib lists weak1060869
+Node: iklib lists queue1062007
+Node: iklib lists misc1063708
+Node: iklib bytevectors1066905
+Node: iklib bytevectors predicates1067750
+Node: iklib bytevectors comparison1068308
+Node: iklib bytevectors conversion1069767
+Node: iklib bytevectors valpred1078482
+Node: iklib bytevectors sub1081354
+Node: iklib bytevectors generic1082815
+Node: iklib strings1083893
+Node: iklib strings predicates1084425
+Node: iklib strings constructors1085250
+Node: iklib strings comparison1086152
+Node: iklib strings conversion1086748
+Node: iklib strings misc1092162
+Node: iklib vectors1092506
+Node: iklib vectors constructors1093020
+Node: iklib vectors predicates1093843
+Node: iklib vectors comparison1095071
+Node: iklib vectors copying1095659
+Node: iklib vectors iteration1096585
+Node: iklib vectors misc1100899
+Node: iklib symbols1102015
+Node: iklib symbols predicates1102402
+Node: iklib symbols comparison1102706
+Node: iklib symbols value1103645
+Node: iklib symbols plists1109220
+Node: iklib fixnums1110566
+Node: iklib fixnums predicates1110954
+Node: iklib fixnums comparison1112503
+Node: iklib fixnums arithmetics1113171
+Node: iklib fixnums conversion1115324
+Node: iklib flonums1115794
+Node: iklib numerics1119605
+Node: iklib numerics constants1120224
+Node: iklib numerics compar1122327
+Node: iklib numerics preds1122801
+Node: iklib numerics bignums1126176
+Node: iklib numerics ratnums1127414
+Node: iklib numerics math1128246
+Node: iklib numerics bitwise1131196
+Node: iklib enumerations1131612
+Node: iklib hashtables1131977
+Node: iklib hashtables pred1132404
+Node: iklib hashtables iterators1133098
+Node: iklib hashtables hashfun1140078
+Node: iklib hashtables tcbuckets1146389
+Node: iklib load1146887
+Node: iklib modules1147702
+Node: iklib modules api1148335
+Node: iklib modules examples1150274
+Node: iklib modules examples anonymous1150716
+Node: iklib modules examples named1153937
+Node: iklib modules examples import1157720
+Node: iklib modules examples utilities1158862
+Node: iklib parameters1159783
+Node: iklib gensym1165612
+Node: iklib printing1169559
+Node: iklib printing formatting1169888
+Node: iklib printing pretty1172582
+Node: iklib printing debug1179456
+Node: iklib timing1180218
+Node: iklib gc1186048
+Node: iklib guardians1190839
+Node: iklib guardians examples1191544
+Node: iklib guardians api1196713
+Node: iklib engines1199152
+Node: iklib io1199397
+Node: iklib io pathnames1202439
+Node: iklib io codecs1211099
+Ref: iklib io codecs-Footnote-11214196
+Node: iklib io non-blocking1214343
+Node: iklib io non-blocking object1215820
+Node: iklib io non-blocking mode1216337
+Node: iklib io non-blocking binary1217473
+Node: iklib io non-blocking textual1221126
+Node: iklib io binary1225400
+Node: iklib io textual1230607
+Node: iklib io buffer1238136
+Node: iklib io plists1239676
+Node: iklib io misc1240570
+Node: iklib pointers1243669
+Node: iklib pointers cons1244368
+Node: iklib pointers pred1244938
+Node: iklib pointers compar1246110
+Node: iklib pointers conv1247477
+Node: iklib pointers misc1248276
+Node: iklib pointers poke1249269
+Node: iklib pointers peek1254502
+Node: iklib arrays poke1259515
+Node: iklib arrays peek1264576
+Node: iklib memory1269474
+Node: iklib memory intro1269933
+Node: iklib memory alloc1271299
+Node: iklib memory ops1276703
+Node: iklib memory blocks1279844
+Node: iklib memory condition1282517
+Node: iklib cstrings1283199
+Node: iklib errno1290806
+Node: iklib time1293360
+Node: iklib time time1293707
+Node: iklib time epoch1297066
+Node: iklib time date1299206
+Node: iklib readline1299541
+Node: iklib debug1300920
+Node: iklib sentinel1302407
+Node: iklib misc1302889
+Node: libutils1307593
+Node: libutils names1308591
+Node: libutils names pred1309063
+Node: libutils names split1310765
+Node: libutils names compar1313483
+Node: libutils refs1317170
+Node: libutils refs pred1317821
+Node: libutils refs split1320230
+Node: libutils refs compar1321306
+Node: libutils refs conform1321772
+Node: libutils libraries1330869
+Node: libutils libraries typedef1331397
+Node: libutils libraries global-env1340163
+Node: libutils libraries ops1346889
+Node: libutils interning1347820
+Node: libutils expanding1352250
+Node: libutils loading1355779
+Node: libutils locating1360667
+Node: libutils file-system1363866
+Node: libutils file-system extensions1366175
+Node: libutils file-system pathnames1367467
+Node: libutils file-system paths1372126
+Ref: library-source-search-path1374601
+Node: libutils file-system binary1376409
+Node: libutils file-system source1378818
+Node: libutils file-system locators1381151
+Node: libutils file-system locators run1381568
+Node: libutils file-system locators compile1384989
+Node: libutils file-system locators source1393688
+Node: libutils dynamic1400007
+Node: libutils compiling1401931
+Node: libutils compiling special1402140
+Node: libutils compiling special build1402352
+Node: progutils1404670
+Node: progutils pathanmes1405198
+Node: progutils expanding1406253
+Node: includes1408841
+Node: foreign1415434
+Node: ffi1418413
+Node: ffi libffi1420016
+Node: ffi dl1421150
+Node: ffi shared1425147
+Node: ffi call1430706
+Node: ffi call intro1431783
+Node: ffi call out1435222
+Node: ffi call back1437972
+Node: ffi call types1441667
+Node: ffi foreign wrapper1443306
+Node: ffi foreign wrapper syntax1443797
+Node: ffi foreign wrapper binds1447987
+Node: syslib1456511
+Node: syslib booleans1458663
+Node: syslib symbols1459907
+Node: syslib symbols accessors1460712
+Node: syslib symbols constructors1461178
+Node: syslib symbols comparison1461754
+Node: syslib symbols conversion1462776
+Node: syslib symbols plists1463190
+Node: syslib symbols value1464275
+Node: syslib symbols table1465892
+Node: syslib keywords1466621
+Node: syslib fixnums1467584
+Node: syslib bignums1476782
+Node: syslib flonums1477983
+Node: syslib flonums constr1479092
+Node: syslib flonums inspect1479403
+Node: syslib flonums arithmetic1480575
+Node: syslib flonums conversion1481428
+Node: syslib flonums predicates1482234
+Node: syslib flonums comparison1484236
+Node: syslib flonums rounding1485178
+Node: syslib flonums parts1485935
+Node: syslib flonums trigon1486336
+Node: syslib flonums hyperbol1487140
+Node: syslib flonums log1487626
+Node: syslib flonums power1488838
+Node: syslib ratnums1489318
+Node: syslib compnums1490970
+Node: syslib cflonums1492159
+Node: syslib numerics1492982
+Node: syslib numerics neg1496133
+Node: syslib numerics inv1497046
+Node: syslib numerics add11498262
+Node: syslib numerics sub11498758
+Node: syslib numerics add1499254
+Node: syslib numerics sub1507900
+Node: syslib numerics mul1514583
+Node: syslib numerics div1521179
+Node: syslib numerics square1527726
+Node: syslib numerics cube1528624
+Node: syslib numerics gcd1529492
+Node: syslib numerics lcm1532736
+Node: syslib numerics quorem1535945
+Node: syslib numerics quotient1540026
+Node: syslib numerics remainder1543410
+Node: syslib numerics modulo1546801
+Node: syslib numerics max1550133
+Node: syslib numerics min1553029
+Node: syslib numerics abs1555922
+Node: syslib numerics sign1556555
+Node: syslib numerics numerator1557478
+Node: syslib numerics denominator1558119
+Node: syslib numerics exact1558752
+Node: syslib numerics inexact1559841
+Node: syslib numerics expt1560655
+Node: syslib numerics expt any1561535
+Node: syslib numerics expt zero1562598
+Node: syslib numerics expt posi1563469
+Node: syslib numerics expt nega1564929
+Node: syslib numerics expt fixnums1566392
+Node: syslib numerics expt bignums1567374
+Node: syslib numerics expt ratnums1568362
+Node: syslib numerics expt flonums1569378
+Node: syslib numerics expt compnums1570397
+Node: syslib numerics expt cflonums1571299
+Node: syslib numerics sqrt1572179
+Node: syslib numerics cbrt1574858
+Node: syslib numerics log1575793
+Node: syslib numerics exp1576836
+Node: syslib numerics sin1577683
+Node: syslib numerics cos1578515
+Node: syslib numerics tan1579363
+Node: syslib numerics asin1580220
+Node: syslib numerics acos1581114
+Node: syslib numerics atan1582069
+Node: syslib numerics sinh1583667
+Node: syslib numerics cosh1584481
+Node: syslib numerics tanh1585311
+Node: syslib numerics asinh1586150
+Node: syslib numerics acosh1587028
+Node: syslib numerics atanh1588137
+Node: syslib numerics conjugate1589222
+Node: syslib numerics magnitude1589667
+Node: syslib numerics angle1590473
+Node: syslib numerics bitnot1591250
+Node: syslib numerics bitand1591627
+Node: syslib numerics bitior1592652
+Node: syslib numerics bitxor1593759
+Node: syslib numerics floor1594865
+Node: syslib numerics ceiling1595521
+Node: syslib numerics truncate1596199
+Node: syslib numerics round1596887
+Node: syslib chars1597513
+Node: syslib pairs1598938
+Node: syslib lists1599596
+Node: syslib structs1599972
+Node: syslib structs safe1600288
+Node: syslib structs safe define1600985
+Node: syslib structs safe using1607477
+Node: syslib structs safe inspect1610410
+Node: syslib structs safe printer1610978
+Node: syslib structs safe final1616046
+Node: syslib structs safe data1621347
+Node: syslib structs unsafe1624144
+Node: syslib records1627687
+Node: syslib vectors1630727
+Node: syslib vectors makers1631307
+Node: syslib vectors inspect1632406
+Node: syslib vectors access1633158
+Node: syslib vectors mapping1633796
+Node: syslib vectors copying1635235
+Node: syslib vectors conversion1636805
+Node: syslib bytevectors1637357
+Node: syslib bytevectors constructors1638047
+Node: syslib bytevectors predicates1638881
+Node: syslib bytevectors comparison1639217
+Node: syslib bytevectors inspection1640689
+Node: syslib bytevectors accessors1641020
+Node: syslib bytevectors accessors 8-bit1641795
+Node: syslib bytevectors accessors 16-bit1642718
+Node: syslib bytevectors accessors 32-bit1645119
+Node: syslib bytevectors accessors 64-bit1647675
+Node: syslib bytevectors accessors single1650313
+Node: syslib bytevectors accessors double1652099
+Node: syslib bytevectors copying1653841
+Node: syslib bytevectors concatenating1655733
+Node: syslib bytevectors encodings1656849
+Node: syslib strings1658708
+Node: syslib ports1666164
+Node: syslib transcoders1667841
+Node: syslib pointers1669013
+Node: syslib hashtables1670113
+Node: syslib tcbuckets1677257
+Node: syslib codes1678506
+Node: syslib codes safe1678834
+Node: syslib codes unsafe1681085
+Node: syslib closures1682485
+Node: syslib compar1684182
+Node: syslib compar numerics1685449
+Node: syslib compar textual1686350
+Node: syslib compar misc1686991
+Node: objects1687904
+Node: objects types1689929
+Node: objects refs1690830
+Node: objects memory1704233
+Node: objects memory pages1704783
+Node: objects memory segments1710361
+Node: objects memory pcb1714811
+Node: objects memory alloc1723634
+Node: objects memory usage1731866
+Ref: objects memory usage-Footnote-11738922
+Node: objects booleans1739065
+Node: objects fixnums1739589
+Node: objects pairs1743645
+Node: objects bytevectors1751899
+Node: objects vectors1759831
+Node: objects structs1769050
+Node: objects chars1781891
+Node: objects strings1786055
+Node: objects symbols1792955
+Node: objects symbols values1793907
+Node: objects symbols ops1797348
+Node: objects bignums1799321
+Node: objects integers1809835
+Node: objects ratnums1814002
+Node: objects flonums1820758
+Node: objects compnums1825352
+Node: objects cflonums1832213
+Node: objects ports1839007
+Node: objects transcoders1839866
+Node: objects pointers1840600
+Node: objects tcbuckets1845292
+Node: objects codes1848687
+Node: objects codes layout1849181
+Node: objects codes ops1852347
+Node: objects codes reloc1854446
+Node: objects codes reloc vanilla1857605
+Node: objects codes reloc foreign1858995
+Node: objects codes reloc offset1860792
+Node: objects codes reloc jump1863382
+Node: objects codes gc1866357
+Node: objects closures1866880
+Node: objects continuations1872801
+Node: objects continuations intro1873826
+Node: objects continuations scheme1879015
+Ref: fig:kont_empty_stack1880023
+Ref: fig:kont_two_frames1881342
+Ref: fig:kont_freezed_frames1883311
+Ref: fig:kont_split_frames1885732
+Node: objects continuations system1886994
+Ref: fig:kont_cstack_reenter1888803
+Node: objects misc1891115
+Node: objects misc mblock1891649
+Node: objects misc voidp1892762
+Node: objects misc charp1896018
+Node: objects misc cbuffers1899261
+Node: objects misc func1901565
+Node: objects callbacks1902401
+Node: debug int1903808
+Node: debug int intro1904018
+Node: expander1905056
+Node: expander intro1906329
+Node: expander intro macros1908211
+Node: expander intro times1912255
+Node: expander intro bindings1913936
+Node: expander intro lex1919881
+Ref: fix:expander-intro-11922671
+Node: expander options1930155
+Node: expander lexenv1930511
+Node: expander lexenv rib1932420
+Node: expander lexenv rib type1933336
+Node: expander lexenv rib extending1934624
+Node: expander lexenv rib sealing1938041
+Node: expander lexenv stx1940528
+Node: expander lexenv descriptors1946788
+Node: expander lexenv prim1948509
+Node: expander lexenv prim inspect1950336
+Node: expander lexenv prim names1953589
+Node: expander lexenv prim integrated1955355
+Node: expander lexenv prim cmacros1956216
+Node: expander lexenv prim ncmacros1957182
+Node: expander lexenv prim primitives1958538
+Node: expander lexenv prim bio1959194
+Node: expander lexenv prim btd1961739
+Node: expander lexenv prim records1962505
+Node: expander lexenv prim conditions1964634
+Node: expander lexenv prim rtd1966778
+Node: expander lexenv prim rcd1967306
+Node: expander lexenv prim fluids1967858
+Node: expander lexenv prim labels1968502
+Node: expander lexenv imported1970366
+Node: expander lexenv imported inspect1972353
+Node: expander lexenv imported variables1973624
+Node: expander lexenv imported nvmacros1974221
+Node: expander lexenv imported vmacros1975059
+Node: expander lexenv imported etv1975925
+Node: expander lexenv imported stn1976819
+Node: expander lexenv imported rtn1977351
+Node: expander lexenv imported modules1978108
+Node: expander lexenv imported fluids1978722
+Node: expander lexenv imported synonyms1979396
+Node: expander lexenv imported examples1980203
+Node: expander lexenv internal1981327
+Node: expander lexenv internal variables1984136
+Node: expander lexenv internal nvmacro1984932
+Node: expander lexenv internal vmacros1986026
+Node: expander lexenv internal etv1987140
+Node: expander lexenv internal modules1988222
+Node: expander lexenv internal pvars1988825
+Node: expander lexenv internal stn1990084
+Node: expander lexenv internal rtn1990676
+Node: expander lexenv internal fluids1991476
+Node: expander lexenv internal synonym1991971
+Node: expander lexenv internal bfs1992541
+Node: expander lexenv internal displaced1993362
+Node: expander lexenv fluids1994083
+Node: expander lexenv synonyms1996888
+Node: expander lexenv inspection1997630
+Node: expander utils2000565
+Node: expander utils intro2001414
+Node: expander utils id2002264
+Node: expander utils records2007584
+Node: expander utils structs2009648
+Node: expander utils pairs2011723
+Node: expander utils vectors2013537
+Node: expander utils special2014241
+Node: expander utils unwrap2016173
+Node: expander utils inspect2016841
+Node: expander utils compar2017048
+Node: expander utils expanding2017608
+Node: expander clauses2019055
+Node: expander clauses intro2020036
+Node: expander clauses utils2020895
+Node: expander clauses constr2023413
+Node: expander clauses objects2026397
+Node: expander system-labels2034365
+Node: expander system-identifiers2036193
+Node: expander examples2037671
+Node: expander examples intro2038167
+Node: expander examples top-level2039323
+Node: expander examples contours2041445
+Node: expander examples contours single2042282
+Node: expander examples contours double2044677
+Node: expander examples contours datum2047914
+Node: expander examples phases2049374
+Node: expander examples phases single2049700
+Node: expander specs2053037
+Node: expander specs intro2055204
+Node: expander specs retrieving2058393
+Node: expander specs object2059122
+Node: expander specs core2067041
+Node: expander specs struct2068314
+Node: expander specs record2069006
+Node: expander specs pair2070050
+Node: expander specs pair-of2071019
+Node: expander specs list2071952
+Node: expander specs list-of2073031
+Node: expander specs vector2073954
+Node: expander specs vector-of2075065
+Node: expander specs condobj2076011
+Node: expander specs enum2077135
+Node: expander specs hashtable2078211
+Node: expander specs alist2079233
+Node: expander specs closure2080251
+Node: expander specs union2081199
+Node: expander specs intersection2082154
+Node: expander specs complement2083338
+Node: expander specs ancestor2084318
+Node: expander specs label2085475
+Node: expander specs interface2086006
+Node: expander specs signatures2086568
+Node: expander specs signatures type2086988
+Node: expander specs signatures lambda2087918
+Node: expander specs signatures case-lambda2089246
+Node: machinery2090319
+Node: machinery simplifications2092319
+Node: machinery registers2094794
+Node: machinery scheme stack2096972
+Ref: fig:MSS_stack_size2098322
+Ref: fig:MSS_empty_stack_C2099810
+Ref: fig:MSS_empty_stack_Scheme2100365
+Node: machinery call frames2103232
+Ref: fig:MCF_empty_stack_Scheme2104085
+Ref: fig:MCF_one_before2104913
+Ref: fig:MCF_one_after2105841
+Ref: fig:MCF_plus_before2106588
+Ref: fig:MCF_plus_adjust2107582
+Ref: fig:MCF_plus_after2108682
+Ref: fig:MCF_plus_ret2109971
+Ref: fig:MCF_caller_adjust2110821
+Ref: fig:MCF_one_ret2111799
+Node: machinery continuations2112817
+Node: machinery continuations general2113761
+Ref: fig:MCG_process_segments2114456
+Ref: fig:MCG_duplicated_stack_segment2115351
+Node: machinery continuations without2116042
+Ref: fig:MCW_continuation_stack_grow2116985
+Ref: fig:MCW_continuation_stack_rewind2117808
+Node: machinery continuations immut2118263
+Node: machinery continuations non2119785
+Ref: fig:MCN_callcc_begin2120703
+Ref: fig:MCN_callcc_freezing2121939
+Ref: fig:MCN_callcc_next_k_K12123325
+Ref: fig:MCN_callcc_K1_escape2124042
+Ref: fig:MCN_callcc_before_receiver2124696
+Ref: fig:MCN_callcc_after_receiver2126491
+Ref: fig:MCN_callcc_K2_frames2127950
+Ref: fig:MCN_callcc_next_k_K22129176
+Ref: fig:MCN_callcc_K1_copy2129818
+Ref: fig:MCN_callcc_beta_ret2131449
+Ref: fig:MCN_callcc_K3_frames2132819
+Ref: fig:MCN_callcc_next_k_K32134091
+Ref: fig:MCN_callcc_K2_copy2134842
+Ref: fig:MCN_callcc_alpha_ret2136513
+Ref: fig:MCN_callcc_next_k_NULL2137798
+Ref: fig:MCN_callcc_K3_copy2138529
+Ref: fig:MCN_callcc_top_ret2140212
+Ref: machinery continuations non-Footnote-12141440
+Node: machinery continuations escape2141556
+Ref: fig:MCE_callcc_begin2142446
+Ref: fig:MCE_callcc_freezing2143405
+Ref: fig:MCE_callcc_next_k_K12144628
+Ref: fig:MCE_callcc_K1_escape2145348
+Ref: fig:MCE_callcc_before_receiver2146019
+Ref: fig:MCE_callcc_enter_beta2147299
+Ref: fig:MCE_callcc_enter_escape2148810
+Ref: fig:MCE_callcc_throw_away2150321
+Ref: fig:MCE_callcc_K2_frames2151945
+Ref: fig:MCE_callcc_next_k_K22152943
+Ref: fig:MCE_callcc_K1_copy2153588
+Ref: fig:MCE_callcc_alpha_ret2154995
+Ref: fig:MCE_callcc_next_k_K32156054
+Ref: fig:MCE_callcc_K2_copy2156636
+Ref: fig:MCE_callcc_top_ret2158049
+Node: machinery stack overflow2159188
+Ref: fig:MSO_stack_boundary2159662
+Ref: fig:MSO_redline_crossed2161128
+Ref: fig:MSO_forcall_frame2163121
+Node: machinery call arguments2164971
+Node: machinery call retvals2165335
+Node: machinery tail calls2165703
+Node: machinery locals2166147
+Ref: fig:ML_arguments_on_stack2167303
+Ref: fig:ML_locals_on_stack2168056
+Ref: fig:ML_before_mutation2170297
+Node: compiler2173829
+Node: compiler intro2176365
+Node: compiler conv2178581
+Node: compiler topics2179542
+Node: compiler topics topbind2180049
+Node: compiler topics locbind2186340
+Node: compiler topics clambda2192619
+Node: compiler options2193723
+Node: compiler sysval2194542
+Node: compiler unparse2196277
+Node: compiler full2197688
+Node: compiler recordize2198703
+Node: compiler recordize bindings2200490
+Node: compiler recordize specials2205188
+Node: compiler recordize examples2206055
+Node: compiler recordize debug2207686
+Node: compiler dircalls2209402
+Node: compiler dircalls lambda2210349
+Node: compiler dircalls let2211099
+Node: compiler dircalls cond2211784
+Node: compiler dircalls debug2212408
+Node: compiler letrec2213908
+Node: compiler letrec algo2215742
+Ref: compiler letrec algo-Footnote-12217426
+Node: compiler letrec api2217518
+Node: compiler letrec notes2219020
+Node: compiler letrec basic2225533
+Node: compiler letrec wsd2226926
+Node: compiler letrec scc2230650
+Node: compiler optimisation2235738
+Node: compiler refassig2237991
+Node: compiler type inference2241882
+Node: compiler unsafe primrefs2245631
+Node: compiler sanitise bindings2247847
+Node: compiler direct jumps2249960
+Node: compiler global assign2253472
+Node: compiler vars2255423
+Node: compiler closure makers2256161
+Node: compiler lifting2260605
+Node: compiler lifting intro2261466
+Node: compiler lifting prerequisites2264479
+Node: compiler lifting combinators2265843
+Node: compiler lifting optimisation2271757
+Node: compiler lifting examples2274297
+Node: compiler lifting substitutions2283020
+Node: compiler lifting api2285339
+Node: compiler primopcalls2286017
+Node: compiler freevar refs2287647
+Node: compiler engine2290514
+Node: compiler stack2291544
+Node: compiler cogen2292648
+Node: compiler cogen primop2293483
+Node: compiler cogen order2293976
+Node: compiler cogen frame2294370
+Node: compiler cogen color2294685
+Node: compiler cogen flatten2295114
+Node: compiler assember2295387
+Node: boot image2295649
+Node: missing2296721
+Node: building2297228
+Node: building revision2297676
+Node: credits2298573
+Node: dynamic environment2300893
+Node: dynamic environment intro2301775
+Node: dynamic environment parms2305544
+Node: dynamic environment extent2307536
+Node: dynamic environment guard2314750
+Node: dynamic environment except2321294
+Node: resources2323837
+Node: unicode2325446
+Node: fasl2331681
+Node: fasl format2332507
+Node: fasl api2339269
+Node: fasl foreign2339926
+Node: shmem2340247
+Node: shmem mmap2340476
+Node: binfmt2345460
+Node: binfmt overview2346545
+Node: binfmt loading2348102
+Node: binfmt registry2349026
+Node: binfmt using2351263
+Node: binfmt control2354306
+Node: binfmt hints2356289
+Node: binfmt scheme2356840
+Node: file-magic2358021
+Node: notes2358567
+Node: notes nan2358826
+Node: notes nan inf2360035
+Ref: notes nan inf-Footnote-12367489
+Node: notes nan nan2367596
+Node: Package License2370739
+Node: history2410566
+Node: references2411301
+Node: references general2411607
+Ref: bib:HDBControl2414626
+Ref: HFWCoro2414892
+Node: references expander2415049
+Node: concept index2416667
+Node: function index2483470
+Node: variable index2940331
+Node: type index2954584
+
+End Tag Table

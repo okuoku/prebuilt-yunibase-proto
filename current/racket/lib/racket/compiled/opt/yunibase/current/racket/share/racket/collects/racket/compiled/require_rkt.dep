@@ -1,0 +1,1 @@
+("8.8.0.10" ta6le ("502a2c578ee45dfbae36cb17cc51954bbbc3ae32" . "09ff55c0ab16338be1e7d1a9b68fe8c91e909058") (collects #"racket" #"base.rkt") (collects #"racket" #"list.rkt") (collects #"racket" #"require-syntax.rkt") (collects #"racket" #"require-transform.rkt") (collects #"racket" #"runtime-config.rkt") (collects #"racket" #"syntax.rkt") (collects #"syntax" #"stx.rkt"))

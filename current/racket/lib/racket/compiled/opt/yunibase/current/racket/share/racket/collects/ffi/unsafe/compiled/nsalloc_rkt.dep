@@ -1,0 +1,1 @@
+("8.8.0.10" ta6le ("790808943870d4a0eb059a0c3983d8838c5003c7" . "c3829aff0a40db7b1f093471578643ab5679ad7e") (collects #"ffi" #"unsafe" #"atomic.rkt") (collects #"ffi" #"unsafe" #"objc.rkt") (collects #"ffi" #"unsafe.rkt") (collects #"racket" #"base.rkt") (collects #"racket" #"runtime-config.rkt"))

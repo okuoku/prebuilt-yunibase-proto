@@ -1,0 +1,1 @@
+("8.8.0.10" ta6le ("25e10e67de8663363e9cb9bbbc754ffb9ac61f14" . "e941271588c4eeb52f775f90eeb92edb8e305d76") (collects #"mzlib" #"pretty.rkt") (collects #"mzscheme" #"main.rkt"))

@@ -1,0 +1,1 @@
+("8.8.0.10" ta6le ("06912c991ab4f56bbc3b221f9c24ebcdbc2bb7fa" . "ad65463c8bc507e9cf652e875865689baf85f40f") (collects #"mzscheme" #"lang" #"reader.rkt") (collects #"mzscheme" #"main.rkt") (collects #"racket" #"cmdline.rkt"))

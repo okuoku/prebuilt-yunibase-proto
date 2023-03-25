@@ -1,0 +1,1 @@
+("8.8.0.10" ta6le ("eef03b5acd75b40e04225f7498538846f450bb51" . "b02c7948ae8ff88ac198cd9f5bc5911d3f5790f5") (collects #"racket" #"base.rkt") (collects #"racket" #"contract.rkt") (collects #"racket" #"list.rkt") (collects #"racket" #"match" #"stxtime.rkt") (collects #"racket" #"runtime-config.rkt") (collects #"syntax" #"boundmap.rkt"))

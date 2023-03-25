@@ -1,0 +1,1 @@
+("8.8.0.10" ta6le ("5d6d89f9165919a445d2e226710b352db6336d50" . "7e26e77f30fa0cf2b7dad1f5d263afb9e8111c61") (collects #"mzscheme" #"main.rkt") (collects #"srfi" #"42" #"expansion.scm") (collects #"srfi" #"42" #"generators.scm") (collects #"srfi" #"42" #"mzscheme2.rkt"))

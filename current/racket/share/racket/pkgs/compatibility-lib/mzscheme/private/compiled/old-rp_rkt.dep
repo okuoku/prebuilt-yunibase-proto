@@ -1,0 +1,1 @@
+("8.8.0.10" ta6le ("16ca56369adba257c1f48d51672e97d8b87a17e3" . "4f23019f25bd512f846c62179e92eaa64affece3") (collects #"racket" #"private" #"small-scheme.rkt") (collects #"racket" #"private" #"stx.rkt") (collects #"racket" #"private" #"stxcase-scheme.rkt"))

@@ -1,0 +1,1 @@
+("8.8.0.10" ta6le ("f20984729e5fde4cd6514c1cda9e7024e3ac59c4" . "e7ab38c17df70bcc889052c1cd7b549479133030") (collects #"mzlib" #"include.rkt") (collects #"mzlib" #"pretty.rkt") (collects #"scheme" #"base.rkt") (collects #"scheme" #"runtime-config.rkt") (collects #"srfi" #"23.rkt") (collects #"srfi" #"42.rkt") (ext collects #"srfi" #"78" #"check-reference.scm"))

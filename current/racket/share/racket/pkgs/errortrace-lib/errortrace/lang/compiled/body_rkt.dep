@@ -1,0 +1,1 @@
+("8.8.0.10" ta6le ("b350a8074dd8d2503c7f1ecfb3c284afbf67a0f2" . "0d97a1da63fbdd35006b3c689ff3f64b437d2a20") (collects #"errortrace" #"errortrace-lib.rkt") (collects #"errortrace" #"private" #"utils.rkt") (collects #"errortrace" #"stacktrace.rkt") (collects #"racket" #"base.rkt") (collects #"racket" #"runtime-config.rkt") (collects #"syntax" #"strip-context.rkt"))

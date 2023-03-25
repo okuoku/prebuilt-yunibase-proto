@@ -1,0 +1,1 @@
+("8.8.0.10" ta6le ("0b5a81a6601075e257be7468dc775b939f40aae2" . "45efdfe53a815438cef7a50978de435f5c0e7930") (collects #"dynext" #"filename-version.rkt") (collects #"racket" #"base.rkt") (collects #"racket" #"runtime-config.rkt") (collects #"setup" #"dirs.rkt"))

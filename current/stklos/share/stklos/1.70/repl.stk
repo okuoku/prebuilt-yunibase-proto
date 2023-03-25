@@ -1,0 +1,353 @@
+;;;;
+;;;; repl.stk   -- STklos REPL
+;;;;
+;;;; Copyright © 2000-2023 Erick Gallesio <eg@stklos.net>
+;;;;
+;;;;
+;;;; This program is free software; you can redistribute it and/or modify
+;;;; it under the terms of the GNU General Public License as published by
+;;;; the Free Software Foundation; either version 2 of the License, or
+;;;; (at your option) any later version.
+;;;;
+;;;; This program is distributed in the hope that it will be useful,
+;;;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;;;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;;;; GNU General Public License for more details.
+;;;;
+;;;; You should have received a copy of the GNU General Public License
+;;;; along with this program; if not, write to the Free Software
+;;;; Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
+;;;; USA.
+;;;;
+;;;;           Author: Erick Gallesio [eg@unice.fr]
+;;;;    Creation date:  4-Jun-2000 15:07 (eg)
+;;;;
+
+;; This file defines the REPL module. This module does not export anything
+;; and is completely self-contained. This is the module which is last loaded
+;; in the default boot file.
+;;
+
+
+(define-module REPL
+  (import SCHEME)
+  (export main-repl repl repl-prompt repl-make-prompt repl-display-prompt
+          repl-prompt-use-color? repl-change-default-ports main-repl-hook
+          repl-theme get-repl-color)
+
+;;; In module REPL
+
+(define interactive?   (interactive-port? (current-input-port)))
+
+(define repl-level 0)
+(define repl-backtrace '())
+
+(define default-in  (current-input-port))
+(define default-out (current-output-port))
+(define default-err (current-error-port))
+
+#|
+<doc EXT repl-theme
+ * (repl-theme)
+ * (repl-theme plist)
+ * (repl-theme name)
+ *
+ * The {{stklos}} REPL colors can be customized using a property list (or a theme
+ * name) using the `repl-theme` parameter. The properties that can be used in this
+ * property list are:
+ *
+ * - `#:error` for the color of error messages
+ * - `#:prompt` for the color of the prompt
+ * - `#:help-prompt` for the color of the help prompt
+ * - `#:help` for the color of the help messages
+ * - `#:repl-depth` for the color of the depth indicator for recursive REPLs
+ * - `#:info` for the color of information messages.
+ *
+ * There are three default themes:
+ *
+ * - **classic** which is the (colorful) default theme.
+ * - **monochrome** which doesn't use colors
+ * - **minimal** where only the prompt and errors are colored.
+ *
+ * Colors are expressed using the conventions of
+ * <<ansicolor, the `ansi-color` primitive>>. For instance:
+ *
+ * @lisp
+ * (key-set! (repl-theme) :prompt '(bold green)) ;; set the prompt to bold green
+ *
+ * (repl-theme 'minimal)                         ;; to use a sober prompt
+ *
+ * (repl-theme '(#:error (bold red)              ;; explicitly defined theme
+ *               #:prompt (bold bg-red white)))
+ * @end lisp
+ *
+ * A good place to change your theme is the `.stklosrc` file.
+doc>
+|#
+(define *repl-themes* `(
+     (classic     .  (:error       (bold red)         ;; error messages
+                      :input       (normal bold)      ;; normal input
+                      :prompt      (bold magenta)     ;; prompt color
+                      :help-prompt (bold green)       ;; help prompt color
+                      :help        (bold blue)        ;; help messages
+                      :repl-depth  yellow             ;; REPL depth
+                      :info        (bold blue)))      ;; informations
+
+     (monochrome  .  ())
+
+     (minimal     . (:error  (bold red)
+                     :prompt  underline))))
+
+(define repl-theme
+  (make-parameter #f
+                  (lambda (theme)
+                    (if (symbol? theme)
+                        (let ((val (assoc theme *repl-themes*)))
+                          (if val (cdr val) '()))
+                        theme))))
+
+(define (get-repl-color key)
+  (key-get (repl-theme) key ""))
+
+
+;;; ======================================================================
+
+(define (do-repl-command l)
+  (define (trim-left str)
+    (regexp-replace "^[ \t]*" str ""))
+
+  (case (car l)
+    ((help h ?)         (display
+                         (do-color (get-repl-color :help)
+                                   (format "Available Commands:
+- ,backtrace ,bt   Show the stack when last error occurred
+- ,cd              Change current directory
+- ,pwd             Print working directory
+- ,quit ,q         Exit STklos
+- ,shell ,!        Run a shell command
+- ,help ,? ,h      This help\n")
+                                   'normal)
+                         (current-error-port))
+                        (flush-output-port (current-error-port)))
+    ((quit q)           (exit 0))
+    ((backtrace bt)     (%display-backtrace repl-backtrace 6))
+    ((shell !)          (system (read-line)))
+    ((cd)               (chdir (trim-left (read-line))))
+    ((pwd)              (printf "~S\n" (getcwd)))
+    (else               (format (current-error-port)
+                                "bad command name: ~S. Type ,help for some help\n"
+                                (car l)))))
+
+
+;; ----------------------------------------------------------------------
+;;      repl-handler ...
+;;         -- The error handler for the REPL
+;; ----------------------------------------------------------------------
+(define %other-error-handlers '())
+
+(define (%try-matching-condition e)
+  (assoc e %other-error-handlers (lambda(key pred?) (pred? key))))
+
+(define (%add-error-to-repl-handler pred? action)
+  ;; Usage exemple:
+  ;; (%add-error-to-repl-handler integer? (lambda (v port)
+  ;;                                       (format port "Got error #~S\n" v)))
+  ;; (raise 42) will print "Got error #42" instead of a "non condition was raised"
+  ;; error
+  (set! %other-error-handlers (cons (cons pred? action) %other-error-handlers)))
+
+
+(define (display-error-message who msg bt out)
+  (let* ((loc (%build-error-location who bt))
+         (from (if (cadr loc)
+                   (format " (near line ~a in file ~s)" (cdadr loc) (caadr loc))
+                   "")))
+    (display (do-color (get-repl-color :error)
+                       (format "**** Error~A:\n~A: ~A\n" from (car loc) msg)
+                       'normal
+                       "\t(type \""
+                       'underline ",help" 'normal
+                       "\" for more information)\n")
+             out)))
+
+
+(define (repl-handler c port)
+  (if (condition? c)
+      (cond
+        ((condition-has-type? c &error-message)         ;; &error-message
+           (let ((who (condition-ref c 'location))
+                 (msg (condition-ref c 'message))
+                 (bt  (condition-ref c 'backtrace)))
+             (display-error-message who msg bt port)
+             (set! repl-backtrace bt)))
+        ((condition-has-type? c &message)               ;; &message (e.g. ^C)
+           (format port (condition-ref c 'message)))
+        ((condition-has-type? c &uncaught-exception)
+           (repl-handler (uncaught-exception-reason c) port))
+        ((condition-has-type? c &exit-r7rs)             ;; R7RS exit function
+         (let ((retcode (condition-ref c 'retcode)))
+           (%pre-exit retcode)
+           (emergency-exit retcode)))
+        (else                                           ;; Unknown
+           (format port "**** Unknown condition raised.\n")
+           (format port "Condition type: ~A\n" (struct-type-name (struct-type c)))
+           (format port "Condition slots: ~S\n" (struct->list c))))
+      ;; Value raised is not a condition. Display it
+      (let ((res (%try-matching-condition c)))
+        (if res
+            ( (cdr res) c port)
+            (format port "**** The following non-condition was raised: ~S\n" c)))))
+
+;; ----------------------------------------------------------------------
+;;      repl-prompt ...
+;; ----------------------------------------------------------------------
+(define repl-prompt (make-parameter ""))
+
+;; ----------------------------------------------------------------------
+;;      repl-prompt-use-color? ...
+;; ----------------------------------------------------------------------
+(define repl-prompt-use-color? (make-parameter #t))
+
+;; ----------------------------------------------------------------------
+;;      make-prompt ...
+;; ----------------------------------------------------------------------
+(define (make-prompt module)
+  (let ((str1 (if (> repl-level 1) (format "[~A] " repl-level) ""))
+        (str2 (format "~A>" (module-name module))))
+    (repl-prompt (if (repl-prompt-use-color?)
+                     (string-append
+                        (do-color (get-repl-color :repl-depth) str1 'normal)
+                        (do-color (get-repl-color :prompt) str2 'normal
+                                  (get-repl-color :input))
+                        " ")
+                     (string-append str1 str2 " ")))))
+
+;; ----------------------------------------------------------------------
+;;      repl-make-prompt ...
+;; ----------------------------------------------------------------------
+(define repl-make-prompt (make-parameter make-prompt))
+
+;; ----------------------------------------------------------------------
+;;      display-prompt ...
+;; ----------------------------------------------------------------------
+(define (display-prompt port)
+  (display (repl-prompt))
+  (flush-output-port port))
+
+;; ----------------------------------------------------------------------
+;;      repl-display-prompt ...
+;; ----------------------------------------------------------------------
+(define repl-display-prompt (make-parameter display-prompt))
+
+;; ----------------------------------------------------------------------
+;;      main-repl-hook ...
+;; ----------------------------------------------------------------------
+(define main-repl-hook (make-parameter void))
+
+;; ----------------------------------------------------------------------
+;;      repl-change-default-ports ...
+;; ----------------------------------------------------------------------
+(define (repl-change-default-ports :key  (in  default-in)
+                                         (out default-out)
+                                         (err default-err))
+  (set! default-in in)
+  (set! default-out out)
+  (set! default-err err))
+
+;; ----------------------------------------------------------------------
+;;      repl ...
+;; ----------------------------------------------------------------------
+
+#|
+<doc EXT repl
+ * (repl)
+ * (repl :in inport :out outport :err errport)
+ *
+ * This procedure launches a new Read-Eval-Print-Loop. Calls to |repl| can be
+ * embedded. The ports used for input/output as well as the error port can
+ * be passed when |repl| is called. If not passed, they default to
+ * |current-input-port|, |current-output-port| and |current-error-port|.
+doc>
+|#
+(define (repl :key (in  default-in)
+                   (out default-out)
+                   (err default-err))
+  (let ((eof #f))
+    (set! repl-level (+ repl-level 1))
+    (let Loop ()
+      (with-handler (lambda (c) (repl-handler c err))
+         ;; display prompt
+         (when interactive?
+           ( (repl-make-prompt) (current-module) )
+           ( (repl-display-prompt) err ))
+
+         (let ((e (%read in)))
+           (display (do-color 'normal))
+           (cond
+             ((eof-object? e)
+                (set! repl-level (- repl-level 1))
+                (set! eof #t)
+                (display "\n")
+                (flush-output-port err)
+                (flush-output-port out))
+
+             ((and (pair? e) (eq? (car e) 'unquote))
+                (do-repl-command (cdr e)))
+
+             (else
+                (call-with-values
+                  (lambda () (eval e))
+                  (lambda v
+                    (when interactive?
+                      (cond
+                        ((null? v)
+                           ;; (values)
+                           #f)
+                        ((eq? (car v) (void))
+                           (when (= (length v) 2)
+                             ;; Special convention for variable definition
+                             (display (do-color (get-repl-color :info)
+                                                (format ";; ~A\n" (cadr v))
+                                                'normal)
+                                      out)))
+                        (else
+                           (for-each (lambda (x) (write-shared x out) (newline out))
+                                     v)))
+                      (flush-output-port out))))))))
+      ;; Loop if we have not meet an EOF
+      (unless eof (Loop)))))
+
+;; ----------------------------------------------------------------------
+;;      main-repl ...
+;; ----------------------------------------------------------------------
+(define (main-repl)
+  ;; Initialize signals suitable for a REPL session (e.g. be immune to ^C)
+  (%initialize-signals)
+  (when interactive?
+    ;; Use classic theme if the user has not set a theme in his/her init file
+    (unless (repl-theme)
+      (repl-theme 'classic))
+    ;; Show banner
+    (let* ((utf8?  (key-get *%system-state-plist* :use-utf8 #f))
+           (line1   (format "STklos version ~A  (Id: ~A)\n" (version) (%push-id)))
+           (line2  "Copyright (C) 1999-2023 Erick Gallesio <eg@stklos.net>\n")
+           (line3 (format "[~a/~a/~a/~a]\n"
+                          (machine-type)
+                          (%thread-system)
+                          (key-get *%system-state-plist* :readline 'no-readline)
+                          (if utf8? 'utf8 'no-utf8)))
+           (line4  "Type ',h' for help\n")
+           (col1  (get-repl-color :input))
+           (col2  (get-repl-color :info)))
+      (display (do-color 'normal col1 "  \\    " col2 line1 'normal))
+      (display (do-color 'normal col1 "   \\   " col2 line2 'normal))
+      (display (do-color 'normal col1 "  / \\  " col2 line3 'normal))
+      (display (do-color 'normal col1 " /   \\ " col2 line4 'normal))))
+  ;; Lauch the REPL
+  ((main-repl-hook))
+  (repl)
+  (%pre-exit 0))
+)
+
+
+; LocalWords:  repl

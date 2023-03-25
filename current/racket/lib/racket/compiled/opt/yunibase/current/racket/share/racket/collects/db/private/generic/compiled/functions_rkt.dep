@@ -1,0 +1,1 @@
+("8.8.0.10" ta6le ("f32d30f776b24abd89b1a1889db7063a4e131b23" . "9894c24b29169687d732585e869d5cca8f512a83") (collects #"db" #"private" #"generic" #"interfaces.rkt") (collects #"db" #"private" #"generic" #"prepared.rkt") (collects #"racket" #"base.rkt") (collects #"racket" #"class.rkt") (collects #"racket" #"runtime-config.rkt") (collects #"racket" #"vector.rkt"))

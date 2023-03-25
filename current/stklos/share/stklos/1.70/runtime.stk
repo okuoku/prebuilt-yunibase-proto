@@ -1,0 +1,236 @@
+;;;;
+;;;; runtime.stk        -- Stuff necessary for bootstaping the system
+;;;;
+;;;; Copyright © 2001-2022 Erick Gallesio <eg@stklos.net>
+;;;;
+;;;;
+;;;; This program is free software; you can redistribute it and/or modify
+;;;; it under the terms of the GNU General Public License as published by
+;;;; the Free Software Foundation; either version 2 of the License, or
+;;;; (at your option) any later version.
+;;;;
+;;;; This program is distributed in the hope that it will be useful,
+;;;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;;;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;;;; GNU General Public License for more details.
+;;;;
+;;;; You should have received a copy of the GNU General Public License
+;;;; along with this program; if not, write to the Free Software
+;;;; Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
+;;;; USA.
+;;;;
+;;;;           Author: Erick Gallesio [eg@unice.fr]
+;;;;    Creation date: 15-Mar-2001 22:49 (eg)
+;;;;
+
+;; ----------------------------------------------------------------------
+;;
+;; List functions
+;;
+;; ----------------------------------------------------------------------
+(define caar   (lambda (x) (car (car x))))
+(define cdar   (lambda (x) (cdr (car x))))
+(define cadr   (lambda (x) (car (cdr x))))
+(define cddr   (lambda (x) (cdr (cdr x))))
+(define caaar  (lambda (x) (car (car (car x)))))
+(define cdaar  (lambda (x) (cdr (car (car x)))))
+(define cadar  (lambda (x) (car (cdr (car x)))))
+(define cddar  (lambda (x) (cdr (cdr (car x)))))
+(define caadr  (lambda (x) (car (car (cdr x)))))
+(define cdadr  (lambda (x) (cdr (car (cdr x)))))
+(define caddr  (lambda (x) (car (cdr (cdr x)))))
+(define cdddr  (lambda (x) (cdr (cdr (cdr x)))))
+(define caaaar (lambda (x) (car (car (car (car x))))))
+(define cdaaar (lambda (x) (cdr (car (car (car x))))))
+(define cadaar (lambda (x) (car (cdr (car (car x))))))
+(define cddaar (lambda (x) (cdr (cdr (car (car x))))))
+(define caadar (lambda (x) (car (car (cdr (car x))))))
+(define cdadar (lambda (x) (cdr (car (cdr (car x))))))
+(define caddar (lambda (x) (car (cdr (cdr (car x))))))
+(define cdddar (lambda (x) (cdr (cdr (cdr (car x))))))
+(define caaadr (lambda (x) (car (car (car (cdr x))))))
+(define cdaadr (lambda (x) (cdr (car (car (cdr x))))))
+(define cadadr (lambda (x) (car (cdr (car (cdr x))))))
+(define cddadr (lambda (x) (cdr (cdr (car (cdr x))))))
+(define caaddr (lambda (x) (car (car (cdr (cdr x))))))
+(define cdaddr (lambda (x) (cdr (car (cdr (cdr x))))))
+(define cadddr (lambda (x) (car (cdr (cdr (cdr x))))))
+(define cddddr (lambda (x) (cdr (cdr (cdr (cdr x))))))
+
+(define (map* fn . l)           ; A map which accepts dotted lists (arg lists
+  (cond                         ; must be "isomorph"
+   ((null? (car l)) '())
+   ((pair? (car l)) (cons (apply fn      (map car l))
+                          (apply map* fn (map cdr l))))
+   (else            (apply fn l))))
+
+(define (for-each* fn . l)      ; A for-each which accepts dotted lists (arg lists
+  (cond                         ; must be "isomorph"
+   ((null? (car l)) '())
+   ((pair? (car l)) (apply fn (map car l)) (apply for-each* fn (map cdr l)))
+   (else            (apply fn l))))
+
+
+(define (filter-map func . args)
+  (filter (lambda (x) x)
+          (apply map func args)))
+#| example
+  (filter-map (lambda (x) (and (number? x) (+ x 1)))
+            '(1 2 foo "bar" 7))
+|#
+
+(define (append-map proc . args)
+  (apply append (apply map proc args)))
+
+(define (append-map! proc . args)
+  (apply append! (apply map proc args)))
+
+
+;; ----------------------------------------------------------------------
+;;
+;; SETTERS
+;;
+;; ----------------------------------------------------------------------
+#|
+<doc EXT setter
+ * (setter proc)
+ *
+ * Returns the setter associated to a |proc|. Setters are defined in the
+ * {{link-srfi 17}} document. A setter proc, can be used in a generalized
+ * assignment, as described in |set!|.
+ *
+ * To associate |s| to the procedure |p|, use the following form:
+ * @lisp
+ * (set! (setter p) s)
+ * @end lisp
+ * For instance, we can write
+ * @lisp
+ * (set! (setter car) set-car!)
+ * @end lisp
+ *
+ * The following standard procedures have pre-defined setters:
+ * @lisp
+ * (set! (car x) v)              == (set-car! x v)
+ * (set! (cdr x) v)              == (set-cdr! x v)
+ * (set! (string-ref x i) v)     == (string-set! x i v)
+ * (set! (vector-ref x i) v)     == (vector-set! x i v)!
+ * (set! (slot-ref x 'name) v)   == (slot-set! x 'name v)
+ * (set! (struct-ref x 'name) v) == (struct-set! x 'name v)
+ * @end lisp
+ * Furhermore, Parameter Objects (see _<<_parameter_objects>>_) are
+ * their own setter:
+ * @lisp
+ * (real-precision)              => 15
+ * (set! (real-precision) 12)
+ * (real-precision)              => 12
+ * @end lisp
+doc>
+|#
+(define (setter proc)
+  (if (or (generic? proc) (parameter? proc))
+      proc
+      (or (key-get (%procedure-plist proc) :setter #f)
+          (error 'setter "no setter defined for ~S" proc))))
+
+
+;; Initialize the setter of setter !!
+(%set-procedure-plist!
+         setter
+         (list :setter
+               (lambda (proc setter)
+                 (%set-procedure-plist! proc
+                                        (key-set! (%procedure-plist proc)
+                                                  :setter
+                                                  setter)))))
+
+;; And now set some setter for primitive functions
+(set! (setter car)              set-car!)
+(set! (setter cdr)              set-cdr!)
+(set! (setter vector-ref)       vector-set!)
+(set! (setter string-ref)       string-set!)
+(set! (setter slot-ref)         slot-set!)
+(set! (setter struct-ref)       struct-set!)
+
+;; ----------------------------------------------------------------------
+;;      symbol-append
+;; ----------------------------------------------------------------------
+(define (symbol-append . args)
+  (let loop ((args args)
+             (res  ""))
+    (if (null? args)
+        (string->symbol res)
+        (loop (cdr args)
+              (string-append res (format "~a" (car args)))))))
+
+
+;; ----------------------------------------------------------------------
+;;      parameters
+;; ----------------------------------------------------------------------
+#|
+<doc EXT stklos-debug-level
+ * (stklos-debug-level)
+ *
+ * |stklos-debug-level| is a parameter objet. It permits to know the current
+ * debugging level. The default value of this parameter is 0 (meaning "no debug").
+ * Note that the debugging level can also be set by the |--debug| option of the
+ * |stklos(1)| command.
+doc>
+|#
+(define stklos-debug-level
+  (make-parameter 0))
+
+;; ----------------------------------------------------------------------
+;;      management of globals ...
+;; ----------------------------------------------------------------------
+;; This should be in compiler module but it a nightmare with bootstrap.
+(define compiler-known-globals
+  (make-parameter '()))
+
+(define (register-new-global! symbol)
+  (let ((lst (compiler-known-globals)))
+    (unless (memq symbol lst)
+      (compiler-known-globals (cons symbol lst)))))
+
+
+(define (register-new-globals! symbols)
+  (let ((lst (compiler-known-globals)))
+    (for-each (lambda (symbol)
+                (unless (memq symbol lst)
+                  (set! lst (cons symbol lst))))
+              symbols)
+    (compiler-known-globals lst)))
+
+;; ----------------------------------------------------------------------
+;;      Module management
+;;----------------------------------------------------------------------
+(define %modules-stack  '())
+(define %module-create  (lambda (name)
+                          (set! %modules-stack (cons (current-module)
+                                                     %modules-stack))
+                          (%create-module name)))
+
+(define %module-restore (lambda ()
+                          (let ((previous (car %modules-stack)))
+                            (set! %modules-stack (cdr %modules-stack))
+                            previous)))
+
+(define %module-handler (lambda (c)
+                          (let ((mod (%module-restore)))
+                            ;; Push c on the module stack since env will be broken
+                            ;; by the module reset!
+                            (set! %modules-stack (cons c %modules-stack))
+                            (%%set-current-module mod)
+                            ;; Hack: Here %module-restore will get back the old c
+                            (raise (%module-restore)))))
+
+;; ----------------------------------------------------------------------
+;;      A trace function, defined early to permit some traces
+;;----------------------------------------------------------------------
+(define (%debug fmt . args)
+  (let ((out (current-error-port)))
+    (display "\x1b;[33m" out)                  ;; yellow
+    (display (apply format fmt args) out)
+    (display  "\x1b;[0m" out)
+    (newline out)))
+
+

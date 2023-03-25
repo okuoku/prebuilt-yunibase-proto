@@ -1,0 +1,1 @@
+("8.8.0.10" ta6le ("aa03bc672afb828b2bead7e8d3a275975a8152d7" . "e9a1ba7511d48e4be4ef14da807bad3129bb37a0") (collects #"compatibility" #"defmacro.rkt") (collects #"racket" #"base.rkt") (collects #"racket" #"runtime-config.rkt"))

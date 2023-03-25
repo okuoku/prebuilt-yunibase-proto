@@ -1,0 +1,253 @@
+;;;;
+;;;; srfi-0.stk                                 -- SRFI-0 aka cond-expand
+;;;;
+;;;; Copyright © 1999-2023 Erick Gallesio <eg@stklos.net>
+;;;;
+;;;;
+;;;; This program is free software; you can redistribute it and/or modify
+;;;; it under the terms of the GNU General Public License as published by
+;;;; the Free Software Foundation; either version 2 of the License, or
+;;;; (at your option) any later version.
+;;;;
+;;;; This program is distributed in the hope that it will be useful,
+;;;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;;;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;;;; GNU General Public License for more details.
+;;;;
+;;;; You should have received a copy of the GNU General Public License
+;;;; along with this program; if not, write to the Free Software
+;;;; Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
+;;;; USA.
+;;;;
+;;;;           Author: Erick Gallesio [eg@unice.fr]
+;;;;    Creation date: 30-Aug-1999 16:26 (eg)
+;;;;
+
+(define-module SRFI-0
+  (import SCHEME)
+  (export srfi0-register-feature!
+          srfi-0-feature-implementation-file
+          require-feature
+          cond-expand
+          %srfi-0-expand ;; FIXME: try to avoid this exportation
+          )
+
+(include "srfis-data.scm") ;; Generated information on implemented SRFIs for SRFI-0
+
+(define *all-features*
+  `(stklos                              ; Of course
+    STklos                              ; In case of a case sensitive reader
+    ,(string->symbol
+      (string-append "STklos-" (version)))
+    ,(string->symbol
+      (string-append "id-" (%push-id)))
+    ,@(if (positive? (key-get *%system-state-plist* :debug 0)) '(debug) '())
+    almost-r7rs                         ; hope it will be r7rs someday
+    ;; exact-closed
+    exact-complex                       ; exact complexes are OK
+    ieee-float                          ; floats are IEEE
+    ,@(if (%use-utf8?)                  ; UTF-8 is used
+          '(full-unicode utf-8 UTF-8)
+          '())
+    ratios
+    ;; 'posix
+    ;; 'windows
+    ,(running-os)  ;; 'unix, darwin, gnu-linux, bsd, freebsd, solaris, ...
+    ;; 'i386, x86-64, ppc, sparc, ...
+    ;; 'ilp32, lp64, ilp64
+    ,(if (%big-endian?) 'big-endian 'little-endian)
+    ,@%srfi-feature-list
+    ))
+
+;; ----------------------------------------------------------------------
+(define (srfi0-register-feature! feature)
+  (set! *all-features* (cons feature *all-features*)))
+
+;; ----------------------------------------------------------------------
+(define (srfi-0-feature-implementation-file x)
+  (let Loop ((l *all-features*))
+    (if (null? l)
+        (error "feature ~S is not supported" x)
+        (let ((current (car l)))
+          (if (pair? current)
+              ;; Clause is (FEATURE . file) or (FEATURE file1 file2 ...)
+              (if (eq? (car current) x)
+                  (let ((val (cdr current)))
+                    (if (pair? val) val (list val)))
+                  (Loop (cdr l)))
+              (if (eq? current x)
+                  #f
+                  (Loop (cdr l))))))))
+
+#|
+<doc EXT require-feature
+ * (require-feature feature)
+ *
+ * This primitive ensures that the |feature| (in sense of SRFI-0 feature)
+ * can be used. In particular, it eventually requires the loading of the
+ * files needed to used |feature|. The |feature| can be expressed as a
+ * string or a symbol, If feature is an integer |n|, it is equivalent to |srfi-n|.
+ * Consequently, to use {{quick-link-srfi 1}} the following forms are equivalent:
+ *
+ * @lisp
+ * (require-feature 'srfi-1)
+ * (require-feature "srfi-1")
+ * (require-feature 1)
+ * (require-feature 'lists)      ;; Since this feature name is an alias for SRFI-1
+ * @end lisp
+ *
+ * See also <<_srfis>> for more information.
+doc>
+|#
+(define (require-feature feat)
+  (let* ((name (cond
+                ((symbol? feat) feat)
+                ((string? feat) (string->symbol feat))
+                ((integer? feat) (symbol-append 'srfi- feat))
+                (else (error "bad feature" feat))))
+         (files (srfi-0-feature-implementation-file name)))
+    (when files
+      (for-each (lambda (x)
+                  ;; NOTE   Do not use the "require" function here, but the macro!!
+                  ;; KLUDGE Since we accept tat srfi-N loads eventually srfi/N, we
+                  ;; need to provide "srfi/N" when require-feature loads a file.
+                  ;; For instance,
+                  ;;   (begin
+                  ;;      (import (srfi 25))
+                  ;;      (require-feature 25))
+                  ;; Here, import will load 25.so (which provides "srfi/25")
+                  ;; and require-feature will require "srfi-25" which will try to
+                  ;; reload "25.so" since "srfi-25" was not provided. Problem:
+                  ;; .so files cannot be loaded more than once.
+                  ;;
+                  (if (regexp-match "srfi-[0-9]+" x)
+                      (let ((str (format "srfi/~a" (substring x 5 (string-length x)))))
+                        (unless (provided? str)
+                          ;; Never loaded srfi/N or srfi-N
+                          (require x)
+                          (provide str)))
+                      ;; simple require
+                      (require x)))
+                files))))
+
+;; ----------------------------------------------------------------------
+(define (%load-implementation files)
+  (for-each* (lambda (x)
+               ;; Use require macro here and not the function
+               (require x))
+             files))
+
+(define (%find-feature x)
+  (let Loop ((l *all-features*))
+    (if (null? l)
+        #f                          ;; not found
+        (let ((current (car l)))
+          (if (pair? current)
+              ;; Clause is (FEATURE . file) or (FEATURE file1 file2 ...)
+              (if (eq? (car current) x)
+                  (cdr current)
+                  (Loop (cdr l)))
+              ;; Clause is FEATURE
+              (or (eq? current x)
+                  (Loop (cdr l))))))))
+
+
+;; ----------------------------------------------------------------------
+(define (%srfi-0-expand  clauses)
+  (cond
+    ((null? clauses)
+     (error 'cond-expand "no clause match"))
+    ((not (pair? (car clauses)))
+     (error 'cond-expand "bad clause ~S" (car clauses)))
+    (else
+     (let ((c (car clauses)))
+       (cond
+         ((eq? (car c) 'else)
+          ;; Clause is (ELSE ...)
+          `(begin ,@(cdr c)))
+
+         ((pair? (car c))
+          ;; Clause is ((AND..)..) ((OR..)..) ((NOT...)) ((LIBRARY ...))
+          (let ((test (car c)))
+            (case (car test)
+              ((and)                            ;; ---------- AND
+               (if (null? (cdr test))
+                   `(begin ,@(cdr c))
+                   `(cond-expand
+                     (,(cadr test) (cond-expand
+                                    ((and ,@(cddr test)) ,@(cdr c))
+                                    ,@(cdr clauses)))
+                     ,@(cdr clauses))))
+
+              ((or)                             ;; ---------- OR
+               (if (null? (cdr test))
+                   `(cond-expand ,@(cdr clauses))
+                   `(cond-expand
+                     (,(cadr test)       ,@(cdr c))
+                     ((or ,@(cddr test)) ,@(cdr c))
+                     ,@(cdr clauses))))
+
+              ((not)                            ;; ---------- NOT
+               (if (or (null? (cdr test))
+                       (not (null? (cddr test))))
+                   (error 'cond-expand "invalid 'not' clause")
+                   `(cond-expand
+                     (,(cadr test) (cond-expand ,@(cdr clauses)))
+                     (else ,@(cdr c)))))
+
+
+              ((library)                        ;; ---------- LIBRARY
+               (if (or (null? (cdr test))
+                       (not (null? (cddr test))))
+                   (error 'cond-expand "invalid 'library' clause")
+                   (let* ((name (cadr test))
+                          (lib  (%library-name->symbol name))
+                          (data (find-module lib #f)))
+                     (if data
+                         `(begin ,@(cdar clauses))
+                         `(cond-expand ,@(cdr clauses))))))
+
+              (else                             ;; ----------
+               (error 'cond-expand "bad clause ~S" c)))))
+
+         (else
+          ;; Clause is (FEATURE ...)
+          (let* ((name  (caar clauses))
+                 (data  (%find-feature name))
+                 (sname (format "~a" name)))
+            (if data
+                (begin
+                  (unless (or (boolean? data)  (provided? sname))
+                    (%load-implementation data)
+                    (when (pair? data)
+                      ;; We have loaded multiple files with a unique name
+                      ;; => provide 'sname' to avoid multiple loading.
+                      (provide sname)))
+                  `(begin ,@(cdar clauses)))
+                `(cond-expand ,@(cdr clauses))))))))))
+
+;; ----------------------------------------------------------------------
+;;      cond-expand ...
+;; ----------------------------------------------------------------------
+(define-macro (cond-expand . clauses)
+  (%srfi-0-expand clauses))
+
+) ;; End of module SRFI-0
+
+
+
+#|
+Examples
+
+     (cond-expand
+        ((and srfi-1 srfi-10)
+         (write 1))
+        ((or srfi-1 srfi-10)
+         (write 2))
+        (else))
+
+
+      (cond-expand
+        (command-line
+         (define (program-name) (car (argv)))))
+|#

@@ -1,0 +1,1 @@
+("8.8.0.10" ta6le ("7ff5f246e14f5e44c699e48512bee0cec79c311a" . "45ac49a6fd579f3671e98899ad811ad67602f4a4") (collects #"racket" #"kernel.rkt") (collects #"s-exp" #"lang" #"reader.rkt"))

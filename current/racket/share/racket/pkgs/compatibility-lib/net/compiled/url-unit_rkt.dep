@@ -1,0 +1,1 @@
+("8.8.0.10" ta6le ("54aa6b8adb8e507db3856daf07bd3811333c1ceb" . "12353b4931e083106b0f08d5a21b92c35aa5ecff") (collects #"net" #"url-connect.rkt") (collects #"net" #"url-sig.rkt") (collects #"net" #"url.rkt") (collects #"racket" #"base.rkt") (collects #"racket" #"runtime-config.rkt") (collects #"racket" #"unit.rkt"))

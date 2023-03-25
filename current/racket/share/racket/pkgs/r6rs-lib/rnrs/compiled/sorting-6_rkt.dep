@@ -1,0 +1,1 @@
+("8.8.0.10" ta6le ("d1b084f02cfcb6f900c53140ed5d2398540a965b" . "45d20e181e880f1de621c17c9b86d049da839ecf") (collects #"scheme" #"base.rkt") (collects #"scheme" #"mpair.rkt") (collects #"scheme" #"runtime-config.rkt"))

@@ -1,0 +1,1 @@
+("8.8.0.10" ta6le ("829b06edb36de2f6aa2e538a4fc6a6ce51094457" . "8c55935a14aa7ad4dcaed97073e5fb2b2aff2e88") (collects #"net" #"smtp-sig.rkt") (collects #"net" #"smtp.rkt") (collects #"racket" #"base.rkt") (collects #"racket" #"runtime-config.rkt") (collects #"racket" #"unit.rkt"))

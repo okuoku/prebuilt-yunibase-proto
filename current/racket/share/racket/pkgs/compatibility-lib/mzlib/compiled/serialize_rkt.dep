@@ -1,0 +1,1 @@
+("8.8.0.10" ta6le ("67ab30752452b0a9ef2051e4e7256241824580b1" . "5c992738b4cf353fb594112ec26d9baeff0d291c") (collects #"mzscheme" #"main.rkt") (collects #"racket" #"base.rkt") (collects #"racket" #"private" #"serialize.rkt") (collects #"syntax" #"struct.rkt"))

@@ -1,0 +1,5 @@
+#define sexp_so_extension ".so"
+#define sexp_default_module_path "/opt/yunibase/current/chibi-scheme/share/chibi:/opt/yunibase/current/chibi-scheme/lib/chibi:/usr/local/share/snow:/usr/local/lib/snow"
+#define sexp_platform "linux"
+#define sexp_version "0.10.0"
+#define sexp_release_name "neon"

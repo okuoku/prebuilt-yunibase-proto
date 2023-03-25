@@ -1,0 +1,1 @@
+("8.8.0.10" ta6le ("9eb08d73be172da80cf21c63e82c7323a119f877" . "ef65772def099e60d14aed8d952f702af886c115") (collects #"compiler" #"cm-accomplice.rkt") (collects #"racket" #"base.rkt") (collects #"racket" #"runtime-config.rkt"))

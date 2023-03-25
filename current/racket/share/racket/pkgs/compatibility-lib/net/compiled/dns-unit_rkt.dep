@@ -1,0 +1,1 @@
+("8.8.0.10" ta6le ("37cf0d66f9ff5ff2e438a20d3d10e1fe917a835a" . "fbf0c6c0580b31429570efc9a0ecb6034a2813da") (collects #"net" #"dns-sig.rkt") (collects #"net" #"dns.rkt") (collects #"racket" #"base.rkt") (collects #"racket" #"runtime-config.rkt") (collects #"racket" #"unit.rkt"))

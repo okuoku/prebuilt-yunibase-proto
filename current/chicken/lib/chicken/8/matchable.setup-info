@@ -1,0 +1,4 @@
+((files "/opt/yunibase/current/chicken/lib/chicken/8/matchable.so"
+        "/opt/yunibase/current/chicken/lib/chicken/8/matchable.import.so")
+ (egg-name "matchable")
+ (version "3.7"))

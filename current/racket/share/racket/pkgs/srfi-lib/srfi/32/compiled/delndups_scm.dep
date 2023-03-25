@@ -1,0 +1,1 @@
+("8.8.0.10" ta6le ("f909df68f02d366dce6e9ff4b40b550fe4ec460f" . "7ab06ff8762e6dd05985436e8ce58ef5cb24b1b6") (collects #"mzscheme" #"main.rkt") (collects #"srfi" #"32" #"vector-util.scm"))

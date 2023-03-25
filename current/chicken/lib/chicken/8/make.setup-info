@@ -1,0 +1,4 @@
+((files "/opt/yunibase/current/chicken/lib/chicken/8/make.so"
+        "/opt/yunibase/current/chicken/lib/chicken/8/make.import.so")
+ (egg-name "make")
+ (version "1.8"))

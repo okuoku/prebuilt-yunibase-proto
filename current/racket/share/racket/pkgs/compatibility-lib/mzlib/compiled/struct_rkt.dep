@@ -1,0 +1,1 @@
+("8.8.0.10" ta6le ("3c1b242d95116169909d0561146117aca27cb029" . "a784e1f0654f5341f8db511c2948669491e996e8") (collects #"mzscheme" #"main.rkt") (collects #"racket" #"base.rkt") (collects #"syntax" #"struct.rkt") (collects #"syntax" #"stx.rkt"))

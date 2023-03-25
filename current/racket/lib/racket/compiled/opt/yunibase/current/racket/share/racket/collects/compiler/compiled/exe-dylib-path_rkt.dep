@@ -1,0 +1,1 @@
+("8.8.0.10" ta6le ("222c52f32fa02e43603e80a6ee0e61db62c8c155" . "c48fcecbc447f226ec8637b593e6e8ec4a611b3b") (collects #"compiler" #"private" #"macfw.rkt") (collects #"racket" #"base.rkt") (collects #"racket" #"contract" #"base.rkt") (collects #"racket" #"runtime-config.rkt"))

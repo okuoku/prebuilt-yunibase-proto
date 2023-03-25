@@ -1,0 +1,352 @@
+#*=====================================================================*/
+#*    serrano/prgm/project/bigloo/bigloo/api/Makefile.api-safe         */
+#*    -------------------------------------------------------------    */
+#*    Author      :  Manuel Serrano                                    */
+#*    Creation    :  Sun Jun 20 06:08:20 2010                          */
+#*    Last change :  Fri May  1 16:27:16 2020 (serrano)                */
+#*    Copyright   :  2010-20 Manuel Serrano                            */
+#*    -------------------------------------------------------------    */
+#*    Generic rules for building and installing libraries              */
+#*=====================================================================*/
+
+#*---------------------------------------------------------------------*/
+#*    Installation                                                     */
+#*---------------------------------------------------------------------*/
+.PHONY: api-install-init api-install-c api-install-jvm \
+  api-uninstall-init api-uninstall-c api-uninstall-jvm 
+
+# init files
+api-install-init:
+	if [ $(DESTDIR)$(LIBDIR)/$(FILDIR) != $(BOOTLIBDIR) ]; then \
+	  cp $(BOOTLIBDIR)/$(API).init $(DESTDIR)$(LIBDIR)/$(FILDIR)/$(API).init && \
+	  chmod $(MODFILE) $(DESTDIR)$(LIBDIR)/$(FILDIR)/$(API).init; \
+        fi
+
+api-uninstall-init:
+	if [ $(DESTDIR)$(LIBDIR)/$(FILDIR) != $(BOOTLIBDIR) ]; then \
+	  $(RM) -f $(DESTDIR)$(LIBDIR)/$(FILDIR)/$(API).init; \
+        fi
+
+# C installation
+api-install-c:
+	if [ $(DESTDIR)$(LIBDIR)/$(FILDIR) != $(BOOTLIBDIR) ]; then \
+	  cp $(BOOTLIBDIR)/$(API).heap $(DESTDIR)$(LIBDIR)/$(FILDIR)/$(API).heap && \
+	  chmod $(MODFILE) $(DESTDIR)$(LIBDIR)/$(FILDIR)/$(API).heap; \
+        fi
+	$(MAKE) api-install-lib SUFFIX=
+	if [ "$(GCTHREADSUPPORT) " = "yes " ]; then \
+	  $(MAKE) api-install-lib SUFFIX=_mt; \
+	fi
+
+api-install-lib:
+	$(MAKE) install-lib LIB=libbigloo$(API)_s$(SUFFIX)-$(RELEASE)
+	$(MAKE) install-lib LIB=libbigloo$(API)_u$(SUFFIX)-$(RELEASE) \
+             LN=libbigloo$(API)_s-$(RELEASE)
+	$(MAKE) install-lib LIB=libbigloo$(API)_es$(SUFFIX)-$(RELEASE)
+	$(MAKE) install-lib LIB=libbigloo$(API)_eu$(SUFFIX)-$(RELEASE)
+
+api-uninstall-c:
+	-$(RM) -f $(DESTDIR)$(LIBDIR)/$(FILDIR)/$(API).heap
+	-$(MAKE) api-uninstall-lib SUFFIX=
+	if [ "$(GCTHREADSUPPORT) " = "yes " ]; then \
+	  $(MAKE) api-uninstall-lib SUFFIX=_mt; \
+	fi
+
+api-uninstall-lib:
+	-$(MAKE) uninstall-lib LIB=libbigloo$(API)_s$(SUFFIX)-$(RELEASE)
+	-$(MAKE) uninstall-lib LIB=libbigloo$(API)_u$(SUFFIX)-$(RELEASE)
+	-$(MAKE) uninstall-lib LIB=libbigloo$(API)_eu$(SUFFIX)-$(RELEASE)
+	-$(MAKE) uninstall-lib LIB=libbigloo$(API)_es$(SUFFIX)-$(RELEASE)
+
+# JVM installation
+api-install-jvm:
+	if [ $(DESTDIR)$(LIBDIR)/$(FILDIR) != $(BOOTLIBDIR) ]; then \
+	  cp $(BOOTLIBDIR)/$(API).jheap $(DESTDIR)$(LIBDIR)/$(FILDIR)/$(API).jheap && \
+	  chmod $(MODFILE) $(DESTDIR)$(LIBDIR)/$(FILDIR)/$(API).jheap && \
+	  cp $(BOOTLIBDIR)/bigloo$(API)_s-$(RELEASE).zip \
+             $(DESTDIR)$(LIBDIR)/$(FILDIR) && \
+	  chmod $(MODFILE) $(DESTDIR)$(LIBDIR)/$(FILDIR)/bigloo$(API)_s-$(RELEASE).zip && \
+	  cp $(BOOTLIBDIR)/bigloo$(API)_es-$(RELEASE).zip \
+             $(DESTDIR)$(LIBDIR)/$(FILDIR) && \
+	  chmod $(MODFILE) $(DESTDIR)$(LIBDIR)/$(FILDIR)/bigloo$(API)_es-$(RELEASE).zip; \
+        fi
+	(cd $(DESTDIR)$(LIBDIR)/$(FILDIR) && \
+           $(RM) -f bigloo$(API)_u-$(RELEASE).zip && \
+           $(LN_S) bigloo$(API)_s-$(RELEASE).zip \
+                   bigloo$(API)_u-$(RELEASE).zip)
+	(cd $(DESTDIR)$(LIBDIR)/$(FILDIR) && \
+           $(RM) -f bigloo$(API)_eu-$(RELEASE).zip && \
+           $(LN_S) bigloo$(API)_es-$(RELEASE).zip \
+                   bigloo$(API)_eu-$(RELEASE).zip)
+
+# JVM uninstallation
+api-uninstall-jvm:
+	-$(RM) -f $(DESTDIR)$(LIBDIR)/$(FILDIR)/$(API).jheap
+	-$(RM) -f $(DESTDIR)$(LIBDIR)/$(FILDIR)/bigloo$(API)_s-$(RELEASE).zip
+	-$(RM) -f $(DESTDIR)$(LIBDIR)/$(FILDIR)/bigloo$(API)_u-$(RELEASE).zip
+	-$(RM) -f $(DESTDIR)$(LIBDIR)/$(FILDIR)/bigloo$(API)_es-$(RELEASE).zip
+	-$(RM) -f $(DESTDIR)$(LIBDIR)/$(FILDIR)/bigloo$(API)_eu-$(RELEASE).zip
+
+#*---------------------------------------------------------------------*/
+#*    Init build                                                       */
+#*---------------------------------------------------------------------*/
+.PHONY: api-init clean-init
+
+api-init: $(BOOTLIBDIR)/$(API).init
+
+$(BOOTLIBDIR)/$(API).init: $(MISC_SRC_DIR)/$(API).init
+	cp $^ $@
+
+clean-init:
+	$(RM) -f $(BOOTLIBDIR)/$(API).init
+
+#*---------------------------------------------------------------------*/
+#*    C build                                                          */
+#*---------------------------------------------------------------------*/
+.PHONY: api-c heap-c api-c-static api-c-shared api-clean-c
+
+api-c: api-init $(TAGS) .afile heap-c
+	mkdir -p objs
+	mkdir -p objs/objs_s
+	mkdir -p objs/objs_u
+	$(MAKE) api-c-static && $(MAKE) api-c-shared
+
+api-c_mt: api-init $(TAGS) .afile heap-c
+	mkdir -p objs
+	mkdir -p objs/objs_s
+	mkdir -p objs/objs_u
+	$(MAKE) api-c-static && $(MAKE) api-c-shared_mt
+
+heap-c: $(BOOTLIBDIR)/$(API).heap
+$(BOOTLIBDIR)/$(API).heap: .afile $(MISC_SRC_DIR)/make_lib.scm
+	$(RM) -f $(BOOTLIBDIR)/$(API).heap
+	$(BIGLOO) $(EFLAGS) $(BFLAGS) $(BHEAPFLAGS) \
+             $(MISC_SRC_DIR)/make_lib.scm -addheap $(BOOTLIBDIR)/$(API).heap
+
+api-c-static: $(BOOTLIBDIR)/libbigloo$(API)_s-$(RELEASE).a \
+              $(BOOTLIBDIR)/libbigloo$(API)_u-$(RELEASE).a \
+              $(BOOTLIBDIR)/libbigloo$(API)_es-$(RELEASE).a \
+              $(BOOTLIBDIR)/libbigloo$(API)_eu-$(RELEASE).a
+
+$(BOOTLIBDIR)/libbigloo$(API)_s-$(RELEASE).a: .afile $(SAFE_OBJECTS)
+	$(RM) -f $(BOOTLIBDIR)/libbigloo$(API)_s-$(RELEASE).a
+	$(AR) $(ARFLAGS) $(BOOTLIBDIR)/libbigloo$(API)_s-$(RELEASE).a $(SAFE_OBJECTS)
+	$(RANLIB) $(BOOTLIBDIR)/libbigloo$(API)_s-$(RELEASE).a
+
+$(BOOTLIBDIR)/libbigloo$(API)_es-$(RELEASE).a: .afile $(SAFE_EOBJECTS)
+	$(RM) -f $(BOOTLIBDIR)/libbigloo$(API)_es-$(RELEASE).a
+	$(AR) $(ARFLAGS) $(BOOTLIBDIR)/libbigloo$(API)_es-$(RELEASE).a $(SAFE_EOBJECTS)
+	$(RANLIB) $(BOOTLIBDIR)/libbigloo$(API)_es-$(RELEASE).a
+
+$(BOOTLIBDIR)/libbigloo$(API)_u-$(RELEASE).a: .afile $(UNSAFE_OBJECTS)
+	$(RM) -f $(BOOTLIBDIR)/libbigloo$(API)_u-$(RELEASE).a
+	$(AR) $(ARFLAGS) $(BOOTLIBDIR)/libbigloo$(API)_u-$(RELEASE).a $(UNSAFE_OBJECTS)
+	$(RANLIB) $(BOOTLIBDIR)/libbigloo$(API)_u-$(RELEASE).a
+
+$(BOOTLIBDIR)/libbigloo$(API)_eu-$(RELEASE).a: .afile $(UNSAFE_EOBJECTS)
+	$(RM) -f $(BOOTLIBDIR)/libbigloo$(API)_eu-$(RELEASE).a
+	$(AR) $(ARFLAGS) $(BOOTLIBDIR)/libbigloo$(API)_eu-$(RELEASE).a $(UNSAFE_EOBJECTS)
+	$(RANLIB) $(BOOTLIBDIR)/libbigloo$(API)_eu-$(RELEASE).a
+
+api-c-shared:
+	if [ "$(SHAREDLIBRARYSUPPORT)" = "yes" ]; then \
+	  $(MAKE) api-one-c-shared LIBSUFFIX=_s LIBSUFFIXTHREAD= && \
+	  $(MAKE) api-one-c-shared LIBSUFFIX=_s LIBSUFFIXTHREAD=_mt && \
+	  $(MAKE) api-one-c-shared LIBSUFFIX=_es LIBSUFFIXTHREAD= && \
+	  $(MAKE) api-one-c-shared LIBSUFFIX=_es LIBSUFFIXTHREAD=_mt && \
+	  $(MAKE) api-one-c-shared LIBSUFFIX=_u LIBSUFFIXTHREAD= && \
+	  $(MAKE) api-one-c-shared LIBSUFFIX=_u LIBSUFFIXTHREAD=_mt && \
+	  $(MAKE) api-one-c-shared LIBSUFFIX=_eu LIBSUFFIXTHREAD= && \
+	  $(MAKE) api-one-c-shared LIBSUFFIX=_eu LIBSUFFIXTHREAD=_mt; \
+        fi
+
+api-c-shared_mt:
+	if [ "$(SHAREDLIBRARYSUPPORT)" = "yes" ]; then \
+	  $(MAKE) api-one-c-shared LIBSUFFIX=_s LIBSUFFIXTHREAD=_mt && \
+	  $(MAKE) api-one-c-shared LIBSUFFIX=_es LIBSUFFIXTHREAD=_mt && \
+	  $(MAKE) api-one-c-shared LIBSUFFIX=_u LIBSUFFIXTHREAD=_mt && \
+	  $(MAKE) api-one-c-shared LIBSUFFIX=_eu LIBSUFFIXTHREAD=_mt; \
+        fi
+
+api-one-c-shared: $(BOOTLIBDIR)/libbigloo$(API)$(LIBSUFFIX)$(LIBSUFFIXTHREAD)-$(RELEASE).$(SHAREDSUFFIX)
+
+$(BOOTLIBDIR)/libbigloo$(API)_s$(LIBSUFFIXTHREAD)-$(RELEASE).$(SHAREDSUFFIX): .afile $(SAFE_OBJECTS)
+	$(MAKE) bigloo-shared-lib \
+           OBJECTS="$(SAFE_OBJECTS)" \
+           FORCELD=true \
+           LIBDEST=$@ \
+           LIBPATH=$(BOOTLIBDIR) \
+           SONAME=libbigloo$(API)$(LIBSUFFIX)$(LIBSUFFIXTHREAD)-$(RELEASE).$(SHAREDSUFFIX) \
+           LDOPTS="$(LDOPTS) $(LDBUILDOPTS)"
+
+$(BOOTLIBDIR)/libbigloo$(API)_u$(LIBSUFFIXTHREAD)-$(RELEASE).$(SHAREDSUFFIX): .afile $(SAFE_OBJECTS)
+	$(MAKE) bigloo-shared-lib \
+           OBJECTS="$(SAFE_OBJECTS)" \
+           FORCELD=true \
+           LIBDEST=$@ \
+           LIBPATH=$(BOOTLIBDIR) \
+           SONAME=libbigloo$(API)$(LIBSUFFIX)$(LIBSUFFIXTHREAD)-$(RELEASE).$(SHAREDSUFFIX) \
+           LDOPTS="$(LDOPTS) $(LDBUILDOPTS)"
+
+$(BOOTLIBDIR)/libbigloo$(API)_es$(LIBSUFFIXTHREAD)-$(RELEASE).$(SHAREDSUFFIX): .afile $(SAFE_OBJECTS)
+	$(MAKE) bigloo-shared-lib \
+           OBJECTS="$(SAFE_EOBJECTS)" \
+           FORCELD=true \
+           LIBDEST=$@ \
+           LIBPATH=$(BOOTLIBDIR) \
+           SONAME=libbigloo$(API)$(LIBSUFFIX)$(LIBSUFFIXTHREAD)-$(RELEASE).$(SHAREDSUFFIX) \
+           LDOPTS="$(LDOPTS) $(LDBUILDOPTS)" \
+           LIBSUFFIX=_s \
+           BIGLOOEXTRALIBS+=bigloo$(API)
+
+$(BOOTLIBDIR)/libbigloo$(API)_eu$(LIBSUFFIXTHREAD)-$(RELEASE).$(SHAREDSUFFIX): .afile $(SAFE_OBJECTS)
+	$(MAKE) bigloo-shared-lib \
+           OBJECTS="$(UNSAFE_EOBJECTS)" \
+           FORCELD=true \
+           LIBDEST=$@ \
+           LIBPATH=$(BOOTLIBDIR) \
+           SONAME=libbigloo$(API)$(LIBSUFFIX)$(LIBSUFFIXTHREAD)-$(RELEASE).$(SHAREDSUFFIX) \
+           LDOPTS="$(LDOPTS) $(LDBUILDOPTS)" \
+           LIBSUFFIX=_u \
+           BIGLOOEXTRALIBS+=bigloo$(API)
+
+api-clean-c:
+	$(RM) -rf objs
+	$(RM) -f $(BOOTLIBDIR)/$(API).heap
+	$(RM) -f $(BOOTLIBDIR)/libbigloo$(API)_s-$(RELEASE).$(SHAREDSUFFIX)
+	$(RM) -f $(BOOTLIBDIR)/libbigloo$(API)_u-$(RELEASE).$(SHAREDSUFFIX)
+	$(RM) -f $(BOOTLIBDIR)/libbigloo$(API)_es-$(RELEASE).$(SHAREDSUFFIX)
+	$(RM) -f $(BOOTLIBDIR)/libbigloo$(API)_eu-$(RELEASE).$(SHAREDSUFFIX)
+	$(RM) -f $(BOOTLIBDIR)/libbigloo$(API)_s_mt-$(RELEASE).$(SHAREDSUFFIX)
+	$(RM) -f $(BOOTLIBDIR)/libbigloo$(API)_u_mt-$(RELEASE).$(SHAREDSUFFIX)
+	$(RM) -f $(BOOTLIBDIR)/libbigloo$(API)_es_mt-$(RELEASE).$(SHAREDSUFFIX)
+	$(RM) -f $(BOOTLIBDIR)/libbigloo$(API)_eu_mt-$(RELEASE).$(SHAREDSUFFIX)
+	$(RM) -f $(BOOTLIBDIR)/libbigloo$(API)_s-$(RELEASE).a
+	$(RM) -f $(BOOTLIBDIR)/libbigloo$(API)_u-$(RELEASE).a
+	$(RM) -f $(BOOTLIBDIR)/libbigloo$(API)_es-$(RELEASE).a
+	$(RM) -f $(BOOTLIBDIR)/libbigloo$(API)_eu-$(RELEASE).a
+
+#*---------------------------------------------------------------------*/
+#*    JVM build                                                        */
+#*---------------------------------------------------------------------*/
+.PHONY: api-jvm heap-jvm api.zip api-clean-jvm
+
+api-jvm: api-init $(TAGS) .jfile heap-jvm
+	mkdir -p $(CLASS_DIR)
+	mkdir -p $(CLASS_EDIR)
+	$(MAKE) api.zip
+
+heap-jvm: $(BOOTLIBDIR)/$(API).jheap
+$(BOOTLIBDIR)/$(API).jheap: .jfile .afile $(MISC_SRC_DIR)/make_lib.scm
+	@ $(RM) -f $(BOOTLIBDIR)/$(API).jheap
+	@ $(BIGLOO) -jvm  $(EFLAGS) $(BFLAGS) $(BHEAPFLAGS) \
+            $(MISC_SRC_DIR)/make_lib.scm -addheap $(BOOTLIBDIR)/$(API).jheap
+
+api.zip: $(BOOTLIBDIR)/bigloo$(API)_s-$(RELEASE).zip \
+         $(BOOTLIBDIR)/bigloo$(API)_es-$(RELEASE).zip \
+
+$(BOOTLIBDIR)/bigloo$(API)_s-$(RELEASE).zip: .afile .jfile $(BGL_CLASSES) javac_s
+	@ $(RM) -f $@
+	@ (cd objs/class_s && \
+	  $(ZIP) -q $(ZFLAGS) $@ $(CLASS_DIR:objs/class_s/%=%)/*.class)
+
+javac_s: $(JAVA_CLASSES_SRC)
+	if [ "$(JAVA_CLASSES_SRC:objs/class_s/%=%) " != " " ]; then \
+	  (cd objs/class_s && \
+             $(JAVAC) $(CYGWINJVMPATH) -classpath $(JVMAPIBOOTPATH) $(JAVA_CLASSES_SRC:objs/class_s/%=%)); \
+        fi
+
+$(BOOTLIBDIR)/bigloo$(API)_es-$(RELEASE).zip: .afile .jfile $(BGL_ECLASSES)
+	@ $(RM) -f $@
+	@ (cd objs/class_es && \
+	  $(ZIP) -q $(ZFLAGS) $@ $(CLASS_EDIR:objs/class_es/%=%)/*.class)
+
+api-clean-jvm:
+	$(RM) -f $(BOOTLIBDIR)/$(API).jheap
+	$(RM) -f $(BOOTLIBDIR)/bigloo$(API)_s-$(RELEASE).zip
+	$(RM) -f $(BOOTLIBDIR)/bigloo$(API)_es-$(RELEASE).zip
+	$(RM) -f $(BOOTLIBDIR)/bigloo$(API)_u-$(RELEASE).zip
+	$(RM) -f $(BOOTLIBDIR)/bigloo$(API)_eu-$(RELEASE).zip
+	$(RM) -rf $(CLASS_DIR)
+
+#*---------------------------------------------------------------------*/
+#*    Compilation rules                                                */
+#*---------------------------------------------------------------------*/
+.SUFFIXES:
+.SUFFIXES: .scm .c .java .cs .class .o .obj
+
+objs/objs_s/%.o: $(BIGLOO_SRC_DIR)/%.scm
+	$(BIGLOO) $(EFLAGS) $(BAPIFLAGS) $(BAPISAFEFLAGS) -copt $(CPICFLAGS) -copt "-I$(C_SRC_DIR)" $< -o $@ -c
+
+objs/objs_s/%.o: $(MISC_SRC_DIR)/%.scm
+	$(BIGLOO) $(EFLAGS) $(BAPIFLAGS) $(BAPISAFEFLAGS) -copt $(CPICFLAGS) -copt "-I$(C_SRC_DIR)" $< -o $@ -c
+
+objs/objs_s/%.o: $(C_SRC_DIR)/%.c
+	$(CC) $(CEFLAGS) $(CAPIFLAGS) $(CFLAGS) $(CPICFLAGS) -I. -I $(BOOTLIBDIR) $(GCINCLUDE) -I $(C_SRC_DIR) $< -o $@ -c
+
+objs/objs_u/%.o: $(BIGLOO_SRC_DIR)/%.scm
+	$(BIGLOO) $(EFLAGS) $(BAPIFLAGS) $(BAPIUNSAFEFLAGS) -copt $(CPICFLAGS) -copt "-I$(C_SRC_DIR)" $< -o $@ -c
+
+objs/objs_u/%.o: $(MISC_SRC_DIR)/%.scm
+	$(BIGLOO) $(EFLAGS) $(BAPIFLAGS) $(BAPIUNSAFEFLAGS) -copt $(CPICFLAGS) -copt "-I$(C_SRC_DIR)" $< -o $@ -c
+
+objs/objs_u/%.o: $(C_SRC_DIR)/%.c
+	$(CC) $(CEFLAGS) $(CAPIFLAGS) $(CFLAGS) $(CPICFLAGS) -I. -I $(BOOTLIBDIR) $(GCINCLUDE) -I $(C_SRC_DIR) $< -o $@ -c
+
+$(CLASS_DIR)/%.class: $(BIGLOO_SRC_DIR)/%.scm
+	$(BIGLOO) -jvm  $(EFLAGS) $(BJVMFLAGS) $(BAPIFLAGS) -c -jvm-purify $< -o $@
+
+$(CLASS_DIR)/%.java: $(JAVA_SRC_DIR)/%.java
+	cp $< $@
+
+$(CLASS_EDIR)/%.class: $(MISC_SRC_DIR)/%.scm
+	$(BIGLOO) -jvm  $(EFLAGS) $(BJVMFLAGS) $(BAPIFLAGS) -c -jvm-purify $< -o $@
+
+#*---------------------------------------------------------------------*/
+#*    ude                                                              */
+#*---------------------------------------------------------------------*/
+.PHONY: ude udeclean dep
+
+ude:
+	@ $(MAKE) -f Makefile .afile .etags .jfile
+
+.afile: $(_BGL_SOURCES)
+	$(RM) -f .afile
+	$(BGLAFILE) -o .afile $(EAFLAGS) $(_BGL_SOURCES)
+
+.jfile: $(_BGL_SOURCES)
+	$(BGLJFILE) -o .jfile $(EAFLAGS) \
+            -I $(BIGLOO_SRC_DIR) -I $(MISC_SRC_DIR) \
+            -pbase bigloo.$(API) \
+            make_lib.scm \
+            $(_BGL_OBJECTS:%=%.scm) \
+            $(_STK_OBJECTS:%=%.bgl) \
+            $(_PKG_OBJECTS:%=%.spi) \
+            $(_SRFI_OBJECTS:%=%.bgl)
+
+.etags: $(_BGL_SOURCES)
+	$(BGLTAGS) -o .etags $(_BGL_SOURCES)
+
+udeclean:
+	$(RM) -f .afile .etags .jfile
+
+dep:
+	@(num=`grep -n '^#bdepend start' Makefile | awk -F: '{ print $$1}' -`;\
+          head -n `expr $$num - 1` Makefile > /tmp/Makefile.aux)
+	@ $(BGLDEPEND) -fno-mco \
+                    -search-path $(BIGLOO_SRC_DIR) \
+                    -strict-obj-dir objs \
+                    $(_BGL_SOURCES) >> /tmp/Makefile.aux
+	@ mv /tmp/Makefile.aux Makefile
+
+#*---------------------------------------------------------------------*/
+#*    Cleaning                                                         */
+#*---------------------------------------------------------------------*/
+.PHONY: api-clean api-cleanall
+
+api-clean: api-clean-c api-clean-jvm
+	$(RM) -f *~
+	$(RM) -f *.mco
+	$(RM) -f *.ast
+
+api-cleanall: clean udeclean clean-init
